@@ -1,5 +1,7 @@
-//library is an array that will store
-//javascript objects containing the media
+//library is an object that will store
+//with key being the type (song/movie/photo)
+//and value being an object containing information 
+//about the media
 var library = { song: [], movie: [], photo: [] };
 function addMovie(photo) {
     library.movie.push(photo);
@@ -24,7 +26,7 @@ var return_sorted_items = function (return_items, x) {
             return return_items;
         }
         else {
-            // console.log(return_items.push(x));
+            return_items.push(x);
             return return_items;
         }
     }
@@ -73,6 +75,12 @@ var slay = {
     name: "Formation", year: 2016, artist: ["Beyonce"],
     song_genre: "Bounce",
     album: "Lemonade", length: length_setter_songs(3, 26),
+    type: "Song"
+};
+var crazy_in_love = {
+    name: "Crazy in Love", year: 2016, artist: ["Beyonce"],
+    song_genre: "R&B",
+    album: "Dangerously in Love", length: length_setter_songs(3, 56),
     type: "Song"
 };
 var doctor_strange = {
@@ -125,6 +133,7 @@ var vivaldi_summer = {
 var winter_horseman = { name: "Winter Horseman", year: 2016, photographer: "Anthony Lau", type: "Photo" };
 addSong(moonlight_sonata);
 addSong(slay);
+addSong(crazy_in_love);
 addSong(stayin_alive);
 addSong(vivaldi_summer);
 addMovie(christmas_party);
@@ -147,16 +156,19 @@ function filterBy(attr_case, attr_name_case, type_case) {
     if (type_case === void 0) { type_case = "all"; }
     //makes all parameters lower case for better searching
     var type = type_case.toLowerCase();
-    var attr = attr_case.toLowerCase();
-    //wraps the attribute name ina string format since attribute name can
-    //include a number (year)
+    //if attr_case is something like Song Genre 
+    //it converts it to song_genre to match the key in 
+    //the library data structure
+    //if attr_case is something like "Year" then it will be "year"
+    var attr_split = String(attr_case).toLowerCase().split(" ");
+    var attr = attr_split.join("_");
     var attr_name = String(attr_name_case).toLowerCase();
     //array for sorted and filtered media to be returned in
     var return_items = [];
     if (type === "song" || type === "movie" || type === "photo") {
         for (var _i = 0, _a = library[type]; _i < _a.length; _i++) {
             var x = _a[_i];
-            if (String(x[attr]).toLowerCase() === String(attr_name)) {
+            if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
                 //insert into array sorted
                 if (return_items.length === 0) {
                     return_items.push(x);
@@ -177,7 +189,7 @@ function filterBy(attr_case, attr_name_case, type_case) {
         for (var y in library) {
             for (var _b = 0, _c = library[y]; _b < _c.length; _b++) {
                 var x = _c[_b];
-                if (String(x[attr]).toLowerCase() === String(attr_name)) {
+                if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
                     //if no items in array
                     if (return_items.length === 0) {
                         return_items.push(x);
@@ -185,7 +197,7 @@ function filterBy(attr_case, attr_name_case, type_case) {
                     else {
                         //inserts element in sorted order                         
                         //so worst case is O(N)
-                        //where instead of sorting it after inserting is O(N Log N)                        
+                        //where instead of sorting it after inserting is O(N Log N)   
                         return_items = return_sorted_items(return_items, x);
                     }
                 }
@@ -195,5 +207,6 @@ function filterBy(attr_case, attr_name_case, type_case) {
         return return_items;
     }
 }
-console.log(filterBy("song_genre", "Classical"));
+var stuff = filterBy("artist", "Bey");
+console.log(stuff);
 //# sourceMappingURL=library.js.map

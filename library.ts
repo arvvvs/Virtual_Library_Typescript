@@ -1,5 +1,7 @@
-//library is an array that will store
-//javascript objects containing the media
+//library is an object that will store
+//with key being the type (song/movie/photo)
+//and value being an object containing information 
+//about the media
 var library = { song: [], movie: [], photo: [] };
 /*
 *Interfaces are a feature form typescript.  
@@ -56,7 +58,7 @@ var return_sorted_items = (return_items, x) => {
             return return_items;
         }
         else {
-            // console.log(return_items.push(x));
+            return_items.push(x);
             return return_items;
         }
     }
@@ -104,6 +106,12 @@ let slay = {
     name: "Formation", year: 2016, artist: ["Beyonce"],
     song_genre: "Bounce",
     album: "Lemonade", length: length_setter_songs(3, 26),
+    type: "Song"
+};
+let crazy_in_love = {
+    name: "Crazy in Love", year: 2016, artist: ["Beyonce"],
+    song_genre: "R&B",
+    album: "Dangerously in Love", length: length_setter_songs(3, 56),
     type: "Song"
 };
 let doctor_strange = {
@@ -156,6 +164,7 @@ let vivaldi_summer = {
 let winter_horseman = { name: "Winter Horseman", year: 2016, photographer: "Anthony Lau", type: "Photo" };
 addSong(moonlight_sonata);
 addSong(slay);
+addSong(crazy_in_love)
 addSong(stayin_alive);
 addSong(vivaldi_summer);
 addMovie(christmas_party);
@@ -179,16 +188,19 @@ if no type is given then it searches across all items in library
 function filterBy(attr_case: String, attr_name_case, type_case: String = "all"): Object {
     //makes all parameters lower case for better searching
     let type = type_case.toLowerCase();
-    let attr = attr_case.toLowerCase();
-    //wraps the attribute name ina string format since attribute name can
-    //include a number (year)
+    //if attr_case is something like Song Genre 
+    //it converts it to song_genre to match the key in 
+    //the library data structure
+    //if attr_case is something like "Year" then it will be "year"
+    let attr_split = String(attr_case).toLowerCase().split(" ");
+    let attr = attr_split.join("_");
     let attr_name = String(attr_name_case).toLowerCase();
 
     //array for sorted and filtered media to be returned in
     let return_items = [];
     if (type === "song" || type === "movie" || type === "photo") {
         for (let x of library[type]) {
-            if (String(x[attr]).toLowerCase() === String(attr_name)) {
+            if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
                 //insert into array sorted
                 if (return_items.length === 0) {
                     return_items.push(x);
@@ -212,16 +224,20 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
 
         for (let y in library) {
             for (let x of library[y]) {
-                if (String(x[attr]).toLowerCase() === String(attr_name)) {
+                if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
                     //if no items in array
                     if (return_items.length === 0) {
                         return_items.push(x);
+                        // console.log(x);
                     }
                     else {
                         //inserts element in sorted order                         
                         //so worst case is O(N)
-                        //where instead of sorting it after inserting is O(N Log N)                        
+                        //where instead of sorting it after inserting is O(N Log N)   
+
+
                         return_items = return_sorted_items(return_items, x);
+
                     }
                 }
 
@@ -234,4 +250,5 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
 
 
 }
-console.log(filterBy("song_genre", "Classical"));
+let stuff = filterBy("artist", "Bey");
+console.log(stuff);

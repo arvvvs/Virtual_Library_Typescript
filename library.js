@@ -11,7 +11,7 @@ function addSong(song) {
     library.song.push(song);
 }
 //function created to maintain a consistent
-//looking length
+//looking length of movie or song
 var length_setter_movies = function (hour, min) {
     if (hour === void 0) { hour = -1; }
     if (min === void 0) { min = -1; }
@@ -24,6 +24,7 @@ var length_setter_movies = function (hour, min) {
     }
     return hour + "h" + " " + min + "m";
 };
+//to help maitain a consistent looking length of movie or song
 var length_setter_songs = function (minutes, seconds) {
     if (minutes === void 0) { minutes = -1; }
     if (seconds === void 0) { seconds = -1; }
@@ -42,7 +43,7 @@ var christmas_party = { name: 'Office Christmas Party', year: 2016,
     actors: ['Jason Bateman', 'Olivia Munn', 'TJ Miller'],
     movie_genre: "Comedy", length: length_setter_movies(1, 20), type: "Movie" };
 var slay = { name: "Formation", year: 2016, artist: ["Beyonce"],
-    "Song_Genre": "Bounce",
+    song_genre: "Bounce",
     album: "Lemonade", length: length_setter_songs(3, 26),
     type: "Song" };
 var doctor_strange = { name: "Doctor Strange", year: 2016,
@@ -53,7 +54,7 @@ var war_games = { name: "War Games", year: 1983, director: ["John Badham"], acto
 var afghan_girl = { name: "Afghan Girl", year: 1984, photographer: "Steve McCurry", type: "Photograph" };
 var migrant_mother = { name: "Migrant Mother",
     year: 1936, photographer: "Dorothea Lange", type: "Photo" };
-var stayin_alive = { name: "Stayin' Alive", year: 1977, artist: ["Bee Gees"], "Song_Genre": "Disco",
+var stayin_alive = { name: "Stayin' Alive", year: 1977, artist: ["Bee Gees"], song_genre: "Disco",
     album: "Saturday Night Fever", length: length_setter_songs(4, 45), type: "Song" };
 var lego_batman = { name: "The Lego Batman Movie",
     year: 2017, director: ["Chris McKay"],
@@ -68,9 +69,9 @@ var hail_caesar = { name: "Hail, Caesar!",
     movie_genre: "Comedy", length: length_setter_movies(1, 46),
     type: "Movie" };
 var moonlight_sonata = { name: "Moonlight Sonata", year: 1801, artist: ["Beethoven"],
-    "Song_Genre": "Classical", album: "Piano Sonatas",
+    song_genre: "Classical", album: "Piano Sonatas",
     length: length_setter_songs(15, 1), type: "Song" };
-var vivaldi_summer = { name: "Summer", year: 1723, artist: ["Vivaldi"], "Song_Genre": "Classical",
+var vivaldi_summer = { name: "Summer", year: 1723, artist: ["Vivaldi"], song_genre: "Classical",
     album: "The Four Seasons",
     length: length_setter_songs(40, 42),
     type: "Song" };
@@ -87,5 +88,33 @@ addPhoto(myPic);
 addPhoto(afghan_girl);
 addPhoto(licoln_photo);
 addPhoto(migrant_mother);
-console.log(JSON.stringify(library, null, 4));
+// console.log(JSON.stringify(library, null, 4));
+//filters and searches the attr.
+function filterBy(attr_case, attr_name_case, type_case) {
+    if (type_case === void 0) { type_case = "all"; }
+    var type = type_case.toLowerCase();
+    var attr = attr_case.toLowerCase();
+    var attr_name = "";
+    if (typeof (attr_name_case) === "String") {
+        attr_name = attr_name_case.toLowerCase();
+    }
+    else {
+        attr_name = attr_name_case;
+    }
+    var return_items = [];
+    if (type === "song" || type === "movie" || type === "photo") {
+        for (var _i = 0, _a = library[type]; _i < _a.length; _i++) {
+            var x = _a[_i];
+            if (String(x[attr]).toLowerCase() === String(attr_name)) {
+                return_items[x["type"]] = x;
+            }
+        }
+        console.log(return_items);
+        return return_items;
+    }
+    else {
+    }
+    return {};
+}
+filterBy("year", 2016, "song");
 //# sourceMappingURL=library.js.map

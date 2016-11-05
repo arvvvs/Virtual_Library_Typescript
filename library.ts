@@ -8,28 +8,28 @@ var library = {song:[], movie:[], photo:[]};
 *It doesn't transpile to javascript
 */
 interface librarySong {
-    Name: String;
-    Year: Number;
-    Artist: Array<String>;
-    Song_Genre: String;
-    Album: String;
-    Length: String;
-    Type: String;
+    name: String;
+    year: Number;
+    artist: Array<String>;
+    "Song_Genre": String;
+    album: String;
+    length: String;
+    type: String;
 }
 interface libraryMovie {
-    Name: String;
-    Year: Number;
-    Director: Array<String>;
-    Actors: Array<String>;
-    Movie_Genre: String;
-    Length: String;
-    Type: String;
+    name: String;
+    year: Number;
+    director: Array<String>;
+    actors: Array<String>;
+    movie_genre: String;
+    length: String;
+    type: String;
 }
 interface libraryPhoto {
-    Name: String;
-    Year: Number;
-    By: String;
-    Type: String;
+    name: String;
+    year: Number;
+    photographer: String;
+    type: String;
 }
 function addMovie(photo: libraryMovie){
     library.movie.push(photo);
@@ -43,11 +43,7 @@ function addSong(song: librarySong){
     library.song.push(song);
 }
 
-var dateSetter = (date) => {
-    let dateObject = new Date; 
-    dateObject.setFullYear(date); 
-    return dateObject.getFullYear();
-};
+
 //function created to maintain a consistent
 //looking length
 let length_setter_movies = (hour:number=-1, min:number=-1) =>{
@@ -70,46 +66,45 @@ let length_setter_songs = (minutes:number=-1, seconds:number=-1) =>{
     }
     return minutes+":"+seconds;
 }
-let date1 = dateSetter(1997);
-let myPic = {Name:'christmas santa',Year: dateSetter(1997), By: 'me', Type:'Photo'};
+let myPic = {name:'christmas santa',year: 1997, photographer: 'me', type:'Photo'};
 
- let christmas_party = {Name:'Christmas',Year: dateSetter(2016), 
- Director: ['Josh Gordon', 'Will Speck'], 
- Actors: ['Jason Bateman', 'Olivia Munn', 'TJ Miller'], 
- Movie_Genre: "Comedy",Length: length_setter_movies(1, 20), Type: "Movie"};
-let slay = {Name:"Formation", Year: 2016, Artist: ["Beyonce"], 
-Song_Genre:"Bounce", 
-Album:"Lemonade",Length:length_setter_songs(3,26), 
-Type:"Song"};
-let doctor_strange = {Name: "Doctor Strange", Year: 2016, 
-Director: ["Scott Derrickson"], Actors:["Benedict Cumberbatch", "Tilda Swilton", "Chiwetel Ejiofor", "Rachel McAdams", "Mads Mikkelson"],
-Movie_Genre:"Fantasy", Length:length_setter_movies(1, 55), Type:"Movie"};
-let war_games = {Name:"War Games", Year:1983, Director:["John Badham"], Actors:["Mathew Broderick", "Ally Sheedy", "John Wood"],
-Movie_Genre: "Science Fiction", Length:length_setter_movies(1,54), Type:"Movie"};
-let afghan_girl = {Name:"Afghan Girl", Year:1984, By:"Steve McCurry", Type:"Photograph"}
-let migrant_mother = {Name:"Migrant Mother",
-Year:1936, By:"Dorothea Lange", Type:"Photo"}
-let stayin_alive = {Name:`Stayin' Alive`, Year:1977, Artist:["Bee Gees"], Song_Genre:"Disco",
- Album:"Saturday Night Fever", Length:length_setter_songs(4,45), Type:"Song"};
-let lego_batman = {Name:"The Lego Batman Movie", 
-Year: 2017, Director:["Chris McKay"], 
-Actors:["Will Arnett", "Michael Cera", "Ralph Fiennes", "Rosario Dawson"],
-Movie_Genre:"Animation", Length: length_setter_movies(), Type:"Movie"};
-let licoln_photo = {Name:"Gettysburg Potrait", Year:1863, 
-By:"Alexander Gardner", Type:"Photo"};
-let hail_caesar = {Name:"Hail, Caesar!", 
-Year: 2015, Director:["Joel Coen", "Ethan Coen"],
-Actors: ["Josh Brolin", "George Clooney", "Alden Ehrenreich", "Ralph Fiennes",
+ let christmas_party = {name:'Office Christmas Party',year: 2016, 
+ director: ['Josh Gordon', 'Will Speck'], 
+ actors: ['Jason Bateman', 'Olivia Munn', 'TJ Miller'], 
+ movie_genre: "Comedy",length: length_setter_movies(1, 20), type: "Movie"};
+let slay = {name:"Formation", year: 2016, artist: ["Beyonce"], 
+"Song_Genre":"Bounce", 
+album:"Lemonade",length:length_setter_songs(3,26), 
+type:"Song"};
+let doctor_strange = {name: "Doctor Strange", year: 2016, 
+director: ["Scott Derrickson"], actors:["Benedict Cumberbatch", "Tilda Swilton", "Chiwetel Ejiofor", "Rachel McAdams", "Mads Mikkelson"],
+movie_genre:"Fantasy", length:length_setter_movies(1, 55), type:"Movie"};
+let war_games = {name:"War Games", year:1983, director:["John Badham"], actors:["Mathew Broderick", "Ally Sheedy", "John Wood"],
+movie_genre: "Science Fiction", length:length_setter_movies(1,54), type:"Movie"};
+let afghan_girl = {name:"Afghan Girl", year:1984, photographer:"Steve McCurry", type:"Photograph"}
+let migrant_mother = {name:"Migrant Mother",
+year:1936, photographer:"Dorothea Lange", type:"Photo"}
+let stayin_alive = {name:`Stayin' Alive`, year:1977, artist:["Bee Gees"], "Song_Genre":"Disco",
+ album:"Saturday Night Fever", length:length_setter_songs(4,45), type:"Song"};
+let lego_batman = {name:"The Lego Batman Movie", 
+year: 2017, director:["Chris McKay"], 
+actors:["Will Arnett", "Michael Cera", "Ralph Fiennes", "Rosario Dawson"],
+movie_genre:"Animation", length: length_setter_movies(), type:"Movie"};
+let licoln_photo = {name:"Gettysburg Potrait", year:1863, 
+photographer:"Alexander Gardner", type:"Photo"};
+let hail_caesar = {name:"Hail, Caesar!", 
+year: 2015, director:["Joel Coen", "Ethan Coen"],
+actors: ["Josh Brolin", "George Clooney", "Alden Ehrenreich", "Ralph Fiennes",
 "Jonah Hill", "Scarlett Johansson", "Tilda Swilton", "Channing Tatum"],
-Movie_Genre:"Comedy", Length:length_setter_movies(1, 46), 
-Type: "Movie"};
-let moonlight_sonata = {Name:"Moonlight Sonata", Year:1801, Artist:["Beethoven"], 
-Song_Genre:"Classical", Album:"Piano Sonatas",
-Length:length_setter_songs(15,1), Type:"Song"};
-let vivaldi_summer = {Name:"Summer", Year:1723, Artist:["Vivaldi"], Song_Genre:"Classical",
-Album:"The Four Seasons", 
-Length:length_setter_songs(40,42),
-Type:"Song"};
+movie_genre:"Comedy", length:length_setter_movies(1, 46), 
+type: "Movie"};
+let moonlight_sonata = {name:"Moonlight Sonata", year:1801, artist:["Beethoven"], 
+"Song_Genre":"Classical", album:"Piano Sonatas",
+length:length_setter_songs(15,1), type:"Song"};
+let vivaldi_summer = {name:"Summer", year:1723, artist:["Vivaldi"], "Song_Genre":"Classical",
+album:"The Four Seasons", 
+length:length_setter_songs(40,42),
+type:"Song"};
 addSong(moonlight_sonata);
 addSong(slay);
 addSong(stayin_alive);
@@ -124,6 +119,5 @@ addPhoto(afghan_girl);
 addPhoto(licoln_photo);
 addPhoto(migrant_mother);
 
-console.log(library);
-
+console.log(JSON.stringify(library, null, 4));
 

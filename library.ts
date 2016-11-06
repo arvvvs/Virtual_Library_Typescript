@@ -168,14 +168,13 @@ addPhoto(afghan_girl);
 addPhoto(licoln_photo);
 addPhoto(migrant_mother);
 addPhoto(winter_horseman);
-
-
+export class LibrarySearch{
 /*
 filters and searches the library and returns results
 searches by attribute, attribute name and (optionally) type
 if no type is given then it searches across all items in library
 */
-function filterBy(attr_case: String, attr_name_case, type_case: String = "all"): Array<Object> {
+public filterBy(attr_case: String, attr_name_case, type_case: String = "all"): Array<Object> {
     //makes all parameters lower case for better searching
     let type = type_case.toLowerCase();
     //if attr_case is something like Song Genre 
@@ -214,7 +213,7 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
     //if a type parameter is provided   
     if (type === "song" || type === "movie" || type === "photo") {
         for (let x of library[type]) {
-            addItem(x, attr, attr_name, return_items);
+            this.addItem(x, attr, attr_name, return_items);
 
         }
         return return_items;
@@ -224,10 +223,10 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
         for (let y in library) {
             for (let x of library[y]) {
                 if (y === "movie") {
-                    addItem(x, "movie_" + attr, attr_name, return_items);
+                    this.addItem(x, "movie_" + attr, attr_name, return_items);
                 }
                 else if (y === "song") {
-                    addItem(x, "song_" + attr, attr_name, return_items);
+                    this.addItem(x, "song_" + attr, attr_name, return_items);
                 }
 
             }
@@ -239,7 +238,7 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
     else {
         for (let y in library) {
             for (let x of library[y]) {
-                addItem(x, attr, attr_name, return_items);
+                this.addItem(x, attr, attr_name, return_items);
 
             }
 
@@ -252,7 +251,7 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
 /*
 * Checks to see if attribute matches the search query and adds it to return items if it does
 */
-let addItem = function (x, attr, attr_name, return_items) {
+addItem = function (x, attr, attr_name, return_items) {
     if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
         //insert into array sorted
         if (return_items.length === 0) {
@@ -272,11 +271,11 @@ let addItem = function (x, attr, attr_name, return_items) {
             //so worst case for operation is O(N) instead of O(log N)
             if (attr !== "year") {
 
-                return_items = return_sorted_items(return_items, x);
+                return_items = this.return_sorted_items(return_items, x);
             }
             else {
                 if (String(x[attr]) === String(attr_name)) {
-                    return_items = return_sorted_items(return_items, x);
+                    return_items = this.return_sorted_items(return_items, x);
 
                 }
             }
@@ -285,7 +284,7 @@ let addItem = function (x, attr, attr_name, return_items) {
 }
 //function to insert element in sorted order
 // based on the item's name or year released
-var return_sorted_items = (return_items, x) => {
+ return_sorted_items = (return_items, x) => {
     for (let i = 0; i < return_items.length; i++) {
 
         if (return_items[i]["name"] > x["name"]) {
@@ -314,9 +313,9 @@ var return_sorted_items = (return_items, x) => {
 * The function will return a string telling the user which items he/she borrowed
 * and which items they were unable to borrow and why
 */
-function borrow(attr_case: String, attr_name_case, type_case: String = "all") {
+public borrow(attr_case: String, attr_name_case, type_case: String = "all") {
     //Uses the filterBy function to search for user query
-    let search = filterBy(attr_case, attr_name_case, type_case);
+    let search = this.filterBy(attr_case, attr_name_case, type_case);
     //Gets the current year
     let current_date = new Date();
     let current_year = current_date.getFullYear();
@@ -369,10 +368,11 @@ function borrow(attr_case: String, attr_name_case, type_case: String = "all") {
     return return_string;
 
 }
+}
 // let stuff = filterBy("genre", "short");
 // console.log(stuff);
-let borrowing = borrow("type", "photo");
-// console.log(borrowing);
- borrowing = borrow("type", "photo");
-console.log(borrowing)
+// let borrowing = borrow("type", "photo");
+// // console.log(borrowing);
+//  borrowing = borrow("type", "photo");
+// console.log(borrowing)
 

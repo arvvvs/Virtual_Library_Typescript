@@ -14,26 +14,6 @@ function addPhoto(movie) {
 function addSong(song) {
     library.song.push(song);
 }
-//function to insert element in sorted order
-// based on the item's name or year released
-var return_sorted_items = function (return_items, x) {
-    for (var i = 0; i < return_items.length; i++) {
-        if (return_items[i]["name"] > x["name"]) {
-            //if the first element is larger than the element
-            //we're seeking to insert
-            if (i === 0) {
-                return_items.splice(i, 0, x);
-                return return_items;
-            }
-            return_items.splice(i - 1, 0, x);
-            return return_items;
-        }
-        else {
-            return_items.push(x);
-            return return_items;
-        }
-    }
-};
 //function created to maintain a consistent
 //looking length of movie or song
 var length_setter_movies = function (hour, min) {
@@ -136,6 +116,7 @@ var vivaldi_summer = {
 };
 var winter_horseman = { name: "Winter Horseman", year: 2016, photographer: "Anthony Lau", type: "Photo" };
 var whiskey_tango_foxtrot = { name: "Whiskey Tango Foxtrot", year: 2016, director: ["Glenn Ficarra", "John Requa"], actors: ["Tina Fey", "Margot Robbie", "Martin Freeman", "Alfred Molina", "Christopher Abbot", "Billy Bob Thorton"], movie_genre: "Comedy", length: length_setter_movies(1, 52), type: "Movie" };
+var stutterer = { name: "Stutter", year: 2015, director: ["Benjamin Cleary"], actors: ["Matthew Needham", "Eric Richard"], movie_genre: "Short Film", length: length_setter_movies(0, 12), type: "Movie" };
 //adds test item to library
 addSong(moonlight_sonata);
 addSong(slay);
@@ -149,6 +130,7 @@ addMovie(ten_cloverfield);
 addMovie(lego_batman);
 addMovie(hail_caesar);
 addMovie(whiskey_tango_foxtrot);
+addMovie(stutterer);
 addPhoto(myPic);
 addPhoto(afghan_girl);
 addPhoto(licoln_photo);
@@ -159,9 +141,8 @@ filters and searches the library and returns results
 searches by attribute, attribute name and (optionally) type
 if no type is given then it searches across all items in library
 */
-function filterBy(attr_case, attr_name_case, type_case, sortBy) {
+function filterBy(attr_case, attr_name_case, type_case) {
     if (type_case === void 0) { type_case = "all"; }
-    if (sortBy === void 0) { sortBy = "name"; }
     //makes all parameters lower case for better searching
     var type = type_case.toLowerCase();
     //if attr_case is something like Song Genre 
@@ -188,6 +169,8 @@ function filterBy(attr_case, attr_name_case, type_case, sortBy) {
         }
     }
     //fixes attribute if "genre" is given with a type
+    //so if attribute is "genre" and type is "movie"
+    //fixes attribute to be movie_genre
     if (type === "movie" && attr === "genre") {
         attr = "movie_genre";
     }
@@ -198,31 +181,19 @@ function filterBy(attr_case, attr_name_case, type_case, sortBy) {
     if (type === "song" || type === "movie" || type === "photo") {
         for (var _i = 0, _a = library[type]; _i < _a.length; _i++) {
             var x = _a[_i];
-            //searches to see if partial attributes matches what we're searching
-            if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
-                //insert into array sorted
-                if (return_items.length === 0) {
-                    //Provides more accurate matching for year (makes sure the years are exact)
-                    if (attr !== "year") {
-                        return_items.push(x);
-                    }
-                    else {
-                        if (String(x[attr]) === String(attr_name)) {
-                            return_items.push(x);
-                        }
-                    }
+            addItem(x, attr, attr_name, return_items);
+        }
+        return return_items;
+    }
+    else if (attr === "genre") {
+        for (var y in library) {
+            for (var _b = 0, _c = library[y]; _b < _c.length; _b++) {
+                var x = _c[_b];
+                if (y === "movie") {
+                    addItem(x, "movie_" + attr, attr_name, return_items);
                 }
-                else {
-                    //inserts element in sorted order
-                    //so worst case for operation is O(N) instead of O(log N)
-                    if (attr !== "year") {
-                        return_items = return_sorted_items(return_items, x);
-                    }
-                    else {
-                        if (String(x[attr]) === String(attr_name)) {
-                            return_items = return_sorted_items(return_items, x);
-                        }
-                    }
+                else if (y === "song") {
+                    addItem(x, "song_" + attr, attr_name, return_items);
                 }
             }
         }
@@ -230,39 +201,65 @@ function filterBy(attr_case, attr_name_case, type_case, sortBy) {
     }
     else {
         for (var y in library) {
-            for (var _b = 0, _c = library[y]; _b < _c.length; _b++) {
-                var x = _c[_b];
-                if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
-                    //insert into array sorted
-                    if (return_items.length === 0) {
-                        //Provides more accurate matching for year (makes sure the years are exact)
-                        if (attr !== "year") {
-                            return_items.push(x);
-                        }
-                        else {
-                            if (String(x[attr]) === String(attr_name)) {
-                                return_items.push(x);
-                            }
-                        }
-                    }
-                    else {
-                        //inserts element in sorted order
-                        //so worst case for operation is O(N) instead of O(log N)
-                        if (attr !== "year") {
-                            return_items = return_sorted_items(return_items, x);
-                        }
-                        else {
-                            if (String(x[attr]) === String(attr_name)) {
-                                return_items = return_sorted_items(return_items, x);
-                            }
-                        }
-                    }
+            for (var _d = 0, _e = library[y]; _d < _e.length; _d++) {
+                var x = _e[_d];
+                addItem(x, attr, attr_name, return_items);
+            }
+        }
+        return return_items;
+    }
+}
+/*
+* Checks to see if attribute matches the search query and adds it to return items if it does
+*/
+var addItem = function (x, attr, attr_name, return_items) {
+    if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
+        //insert into array sorted
+        if (return_items.length === 0) {
+            //Provides more accurate matching for year (makes sure the years are exact)
+            if (attr !== "year") {
+                return_items.push(x);
+            }
+            else {
+                if (String(x[attr]) === String(attr_name)) {
+                    return_items.push(x);
+                }
+            }
+        }
+        else {
+            //inserts element in sorted order
+            //so worst case for operation is O(N) instead of O(log N)
+            if (attr !== "year") {
+                return_items = return_sorted_items(return_items, x);
+            }
+            else {
+                if (String(x[attr]) === String(attr_name)) {
+                    return_items = return_sorted_items(return_items, x);
                 }
             }
         }
     }
-    return return_items;
-}
+};
+//function to insert element in sorted order
+// based on the item's name or year released
+var return_sorted_items = function (return_items, x) {
+    for (var i = 0; i < return_items.length; i++) {
+        if (return_items[i]["name"] > x["name"]) {
+            //if the first element is larger than the element
+            //we're seeking to insert
+            if (i === 0) {
+                return_items.splice(i, 0, x);
+                return return_items;
+            }
+            return_items.splice(i - 1, 0, x);
+            return return_items;
+        }
+        else {
+            return_items.push(x);
+            return return_items;
+        }
+    }
+};
 /*
 * The borrow function uses the filterBy function to find the items
 * The user wants to borrow and then checks to see if they can be borrowed
@@ -303,11 +300,11 @@ function borrow(attr_case, attr_name_case, type_case) {
     }
     //Calibrates the grammer/language of return statement
     if (items_borrowed.length > 0) {
-        return_string += "You borrowed " + items_borrowed.join(",");
+        return_string += "You borrowed " + items_borrowed.join(" , ");
         return_string += "\n";
     }
     if (items_already_borrowed.length > 0) {
-        return_string += "You have already borrowed " + items_already_borrowed.join(",");
+        return_string += "You have already borrowed " + items_already_borrowed.join(" , ");
         return_string += "\n";
     }
     if (items_not_borrowed.length > 0) {
@@ -318,14 +315,16 @@ function borrow(attr_case, attr_name_case, type_case) {
         else {
             these_this = "this item is";
         }
-        return_string += "You were unable to borrow " + items_not_borrowed.join(",") + " because " + these_this + " too new.";
+        return_string += "You were unable to borrow " + items_not_borrowed.join(" , ") + " because " + these_this + " too new.";
     }
     //returns a string telling user of items they borrowed,
     //and they were unable to borrow
     return return_string;
 }
-var stuff = filterBy("year", 2017, "Movie");
-console.log(stuff);
-// let borrowing = borrow("year", "2015");
+// let stuff = filterBy("genre", "short");
+// console.log(stuff);
+var borrowing = borrow("type", "photo");
 // console.log(borrowing);
+borrowing = borrow("type", "photo");
+console.log(borrowing);
 //# sourceMappingURL=library.js.map

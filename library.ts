@@ -46,27 +46,7 @@ function addPhoto(movie: libraryPhoto) {
 function addSong(song: librarySong) {
     library.song.push(song);
 }
-//function to insert element in sorted order
-// based on the item's name or year released
-var return_sorted_items = (return_items, x) => {
-    for (let i = 0; i < return_items.length; i++) {
 
-        if (return_items[i]["name"] > x["name"]) {
-            //if the first element is larger than the element
-            //we're seeking to insert
-            if (i === 0) {
-                return_items.splice(i, 0, x);
-                return return_items;
-            }
-            return_items.splice(i - 1, 0, x);
-            return return_items;
-        }
-        else {
-            return_items.push(x);
-            return return_items;
-        }
-    }
-}
 
 //function created to maintain a consistent
 //looking length of movie or song
@@ -168,6 +148,7 @@ let vivaldi_summer = {
 };
 let winter_horseman = { name: "Winter Horseman", year: 2016, photographer: "Anthony Lau", type: "Photo" };
 let whiskey_tango_foxtrot = { name: "Whiskey Tango Foxtrot", year: 2016, director: ["Glenn Ficarra", "John Requa"], actors: ["Tina Fey", "Margot Robbie", "Martin Freeman", "Alfred Molina", "Christopher Abbot", "Billy Bob Thorton"], movie_genre: "Comedy", length: length_setter_movies(1, 52), type: "Movie" }
+let stutterer = { name: "Stutter", year: 2015, director: ["Benjamin Cleary"], actors: ["Matthew Needham", "Eric Richard"], movie_genre: "Short Film", length: length_setter_movies(0, 12), type: "Movie" };
 //adds test item to library
 addSong(moonlight_sonata);
 addSong(slay);
@@ -181,6 +162,7 @@ addMovie(ten_cloverfield);
 addMovie(lego_batman);
 addMovie(hail_caesar);
 addMovie(whiskey_tango_foxtrot);
+addMovie(stutterer);
 addPhoto(myPic);
 addPhoto(afghan_girl);
 addPhoto(licoln_photo);
@@ -193,7 +175,7 @@ filters and searches the library and returns results
 searches by attribute, attribute name and (optionally) type
 if no type is given then it searches across all items in library
 */
-function filterBy(attr_case: String, attr_name_case, type_case: String = "all", sortBy: String = "name"): Array<Object> {
+function filterBy(attr_case: String, attr_name_case, type_case: String = "all"): Array<Object> {
     //makes all parameters lower case for better searching
     let type = type_case.toLowerCase();
     //if attr_case is something like Song Genre 
@@ -220,6 +202,8 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all", 
         }
     }
     //fixes attribute if "genre" is given with a type
+    //so if attribute is "genre" and type is "movie"
+    //fixes attribute to be movie_genre
     if (type === "movie" && attr === "genre") {
         attr = "movie_genre";
     }
@@ -230,83 +214,96 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all", 
     //if a type parameter is provided   
     if (type === "song" || type === "movie" || type === "photo") {
         for (let x of library[type]) {
-            //searches to see if partial attributes matches what we're searching
-            if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
-                //insert into array sorted
-                if (return_items.length === 0) {
-                    //Provides more accurate matching for year (makes sure the years are exact)
-                    if (attr !== "year") {
-                        return_items.push(x);
-                    }
-                    else {
-                        if (String(x[attr]) === String(attr_name)) {
-                            return_items.push(x);
+            addItem(x, attr, attr_name, return_items);
 
-                        }
-                    }
-                }
-
-                else {
-                    //inserts element in sorted order
-                    //so worst case for operation is O(N) instead of O(log N)
-                    if (attr !== "year") {
-
-                        return_items = return_sorted_items(return_items, x);
-                    }
-                    else {
-                        if (String(x[attr]) === String(attr_name)) {
-                            return_items = return_sorted_items(return_items, x);
-
-                        }
-                    }
-                }
-            }
         }
-                return return_items;            
-        
+        return return_items;
     }
+    //if a generic "genre" is given as an attribute
+    else if (attr === "genre") {
+        for (let y in library) {
+            for (let x of library[y]) {
+                if (y === "movie") {
+                    addItem(x, "movie_" + attr, attr_name, return_items);
+                }
+                else if (y === "song") {
+                    addItem(x, "song_" + attr, attr_name, return_items);
+                }
 
-    //search all attributes if no type is given
+            }
+
+        }
+        return return_items;
+    }
+    //search all attributes if no type or non existent type is given
     else {
         for (let y in library) {
             for (let x of library[y]) {
-                if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
-                    //insert into array sorted
-                    if (return_items.length === 0) {
-                        //Provides more accurate matching for year (makes sure the years are exact)
-                        if (attr !== "year") {
-                            return_items.push(x);
-                        }
-                        else {
-                            if (String(x[attr]) === String(attr_name)) {
-                                return_items.push(x);
+                addItem(x, attr, attr_name, return_items);
 
-                            }
-                        }
-                    }
-                    else {
-                        //inserts element in sorted order
-                        //so worst case for operation is O(N) instead of O(log N)
-                        if (attr !== "year") {
-
-                            return_items = return_sorted_items(return_items, x);
-                        }
-                        else {
-                            if (String(x[attr]) === String(attr_name)) {
-                                return_items = return_sorted_items(return_items, x);
-
-                            }
-                        }
-                    }
-                }
             }
 
         }
+        return return_items;
+
     }
-    return return_items;
 
 }
+/*
+* Checks to see if attribute matches the search query and adds it to return items if it does
+*/
+let addItem = function (x, attr, attr_name, return_items) {
+    if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
+        //insert into array sorted
+        if (return_items.length === 0) {
+            //Provides more accurate matching for year (makes sure the years are exact)
+            if (attr !== "year") {
+                return_items.push(x);
+            }
+            else {
+                if (String(x[attr]) === String(attr_name)) {
+                    return_items.push(x);
 
+                }
+            }
+        }
+        else {
+            //inserts element in sorted order
+            //so worst case for operation is O(N) instead of O(log N)
+            if (attr !== "year") {
+
+                return_items = return_sorted_items(return_items, x);
+            }
+            else {
+                if (String(x[attr]) === String(attr_name)) {
+                    return_items = return_sorted_items(return_items, x);
+
+                }
+            }
+        }
+    }
+}
+//function to insert element in sorted order
+// based on the item's name or year released
+var return_sorted_items = (return_items, x) => {
+    for (let i = 0; i < return_items.length; i++) {
+
+        if (return_items[i]["name"] > x["name"]) {
+            //if the first element is larger than the element
+            //we're seeking to insert
+            if (i === 0) {
+                return_items.splice(i, 0, x);
+                return return_items;
+            }
+            return_items.splice(i - 1, 0, x);
+            return return_items;
+        }
+        else {
+            return_items.push(x);
+            return return_items;
+        }
+    }
+}
 
 
 /*
@@ -350,11 +347,11 @@ function borrow(attr_case: String, attr_name_case, type_case: String = "all") {
     }
     //Calibrates the grammer/language of return statement
     if (items_borrowed.length > 0) {
-        return_string += "You borrowed " + items_borrowed.join(",");
+        return_string += "You borrowed " + items_borrowed.join(" , ");
         return_string += "\n"
     }
     if (items_already_borrowed.length > 0) {
-        return_string += "You have already borrowed " + items_already_borrowed.join(",");
+        return_string += "You have already borrowed " + items_already_borrowed.join(" , ");
         return_string += "\n"
     }
     if (items_not_borrowed.length > 0) {
@@ -365,15 +362,17 @@ function borrow(attr_case: String, attr_name_case, type_case: String = "all") {
         else {
             these_this = "this item is";
         }
-        return_string += "You were unable to borrow " + items_not_borrowed.join(",") + " because " + these_this + " too new.";
+        return_string += "You were unable to borrow " + items_not_borrowed.join(" , ") + " because " + these_this + " too new.";
     }
     //returns a string telling user of items they borrowed,
     //and they were unable to borrow
     return return_string;
 
 }
-let stuff = filterBy("year", 2017,"Movie");
-console.log(stuff);
-// let borrowing = borrow("year", "2015");
+// let stuff = filterBy("genre", "short");
+// console.log(stuff);
+let borrowing = borrow("type", "photo");
 // console.log(borrowing);
+ borrowing = borrow("type", "photo");
+console.log(borrowing)
 

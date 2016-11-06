@@ -100,4 +100,5 @@ library.addPhoto(licoln_photo);
 library.addPhoto(migrant_mother);
 library.addPhoto(winter_horseman);
 
-console.log(library.filterBy("year", "2016"));
+// console.log(library.filterBy("year", "2016"));
+console.log(library.library_movie);

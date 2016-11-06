@@ -32,15 +32,32 @@ interface libraryPhoto {
 }
 export class Library {
 
-    //library is an object that will store
+//library is an object that will store
 //with key being the type (song/movie/photo)
 //and value being an object containing information 
 //about the media
- public library = { song: [], movie: [], photo: [] };
+ private library = { song: [], movie: [], photo: [] };
 // contains items borrowed from the library
- public borrowed = [];
-    
-
+ private borrowed = [];
+//returns entire library unsorted
+get library_collection() {
+    return (this.library);
+}
+//returns all movies in library sorted
+get library_movie(){
+    return this.filterBy("type","movie");
+}
+//returns entire library sorted
+get library_song(){
+    return this.filterBy("type","song");
+}
+//returns library sorted
+get library_photo(){
+    return this.filterBy("type","photo");
+}
+get borrowed_items(){
+    return this.borrowed;
+}
 public addMovie(photo: libraryMovie) {
     this.library.movie.push(photo);
 
@@ -159,7 +176,7 @@ public filterBy(attr_case: String, attr_name_case, type_case: String = "all"): A
 /*
 * Checks to see if attribute matches the search query and adds it to return items if it does
 */
-addItem = function (x, attr, attr_name, return_items) {
+private addItem = function (x, attr, attr_name, return_items) {
     if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
         //insert into array sorted
         if (return_items.length === 0) {
@@ -192,7 +209,7 @@ addItem = function (x, attr, attr_name, return_items) {
 }
 //function to insert element in sorted order
 // based on the item's name or year released
-return_sorted_items = (return_items, x) => {
+private return_sorted_items = (return_items, x) => {
     for (let i = 0; i < return_items.length; i++) {
 
         if (return_items[i]["name"] > x["name"]) {

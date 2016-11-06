@@ -93,6 +93,45 @@ var Library = (function () {
             }
         };
     }
+    Object.defineProperty(Library.prototype, "library_collection", {
+        //returns entire library unsorted
+        get: function () {
+            return (this.library);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Library.prototype, "library_movie", {
+        //returns all movies in library sorted
+        get: function () {
+            return this.filterBy("type", "movie");
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Library.prototype, "library_song", {
+        //returns entire library sorted
+        get: function () {
+            return this.filterBy("type", "song");
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Library.prototype, "library_photo", {
+        //returns library sorted
+        get: function () {
+            return this.filterBy("type", "photo");
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Library.prototype, "borrowed_items", {
+        get: function () {
+            return this.borrowed;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Library.prototype.addMovie = function (photo) {
         this.library.movie.push(photo);
     };

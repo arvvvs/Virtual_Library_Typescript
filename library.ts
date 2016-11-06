@@ -3,9 +3,11 @@
 //and value being an object containing information 
 //about the media
 var library = { song: [], movie: [], photo: [] };
+// contains items borrowed from the library
+var borrowed = [];
 /*
 *Interfaces are a feature form typescript.  
-*They allow me to consitently shape how an objects
+*They allow me to consitently shape how an object
 *containing a song/movie/photo will be cataloged
 *It doesn't transpile to javascript
 */
@@ -44,17 +46,19 @@ function addPhoto(movie: libraryPhoto) {
 function addSong(song: librarySong) {
     library.song.push(song);
 }
-//function to sort and filter results
-var return_sorted_items = (return_items, x) => {
-    for (let z = 0; z < return_items.length; z++) {
-        if (return_items[z].name > x.name) {
+//function to insert element in sorted order
+// based on the item's name or year released
+var return_sorted_items = (return_items, x, sortBy = "name") => {
+    for (let i = 0; i < return_items.length; i++) {
+
+        if (return_items[i].sortBy > x.sortBy) {
             //if the first element is larger than the element
             //we're seeking to insert
-            if (z === 0) {
-                return_items.splice(z, 0, x);
+            if (i === 0) {
+                return_items.splice(i, 0, x);
                 return return_items;
             }
-            return_items.splice(z - 1, 0, x);
+            return_items.splice(i - 1, 0, x);
             return return_items;
         }
         else {
@@ -76,7 +80,7 @@ let length_setter_movies = (hour: number = -1, min: number = -1) => {
     }
     return hour + "h" + " " + min + "m";
 }
-//to help maitain a consistent looking length of movie or song
+//to help maitain a consistent looking length of songs
 let length_setter_songs = (minutes: number = -1, seconds: number = -1) => {
     if ((minutes < 0 || seconds < 0) || (minutes === 0 && seconds === 0)) {
         return "N/A";
@@ -87,6 +91,7 @@ let length_setter_songs = (minutes: number = -1, seconds: number = -1) => {
     }
     return minutes + ":" + seconds;
 }
+//Creating items to add and test for the library
 let myPic = { name: 'christmas santa', year: 1997, photographer: 'me', type: 'Photo' };
 
 let christmas_party = {
@@ -109,7 +114,7 @@ let slay = {
     type: "Song"
 };
 let crazy_in_love = {
-    name: "Crazy in Love", year: 2016, artist: ["Beyonce"],
+    name: "Crazy in Love", year: 2003, artist: ["Beyonce"],
     song_genre: "R&B",
     album: "Dangerously in Love", length: length_setter_songs(3, 56),
     type: "Song"
@@ -162,6 +167,7 @@ let vivaldi_summer = {
     type: "Song"
 };
 let winter_horseman = { name: "Winter Horseman", year: 2016, photographer: "Anthony Lau", type: "Photo" };
+let whiskey_tango_foxtrot = { name: "Whiskey Tango Foxtrot", year: 2016, director: ["Glenn Ficarra", "John Requa"], actors: ["Tina Fey", "Margot Robbie", "Martin Freeman", "Alfred Molina", "Christopher Abbot", "Billy Bob Thorton"], movie_genre: "Comedy", length: length_setter_movies(1, 52), type: "Movie" }
 addSong(moonlight_sonata);
 addSong(slay);
 addSong(crazy_in_love)
@@ -173,6 +179,7 @@ addMovie(war_games);
 addMovie(ten_cloverfield);
 addMovie(lego_batman);
 addMovie(hail_caesar);
+addMovie(whiskey_tango_foxtrot);
 addPhoto(myPic);
 addPhoto(afghan_girl);
 addPhoto(licoln_photo);
@@ -185,7 +192,7 @@ filters and searches the library and returns results
 searches by attribute, attribute name and (optionally) type
 if no type is given then it searches across all items in library
 */
-function filterBy(attr_case: String, attr_name_case, type_case: String = "all"): Object {
+function filterBy(attr_case: String, attr_name_case, type_case: String = "all", sortBy: String = "name"): Array<Object> {
     //makes all parameters lower case for better searching
     let type = type_case.toLowerCase();
     //if attr_case is something like Song Genre 
@@ -198,6 +205,28 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
 
     //array for sorted and filtered media to be returned in
     let return_items = [];
+    //if attribute is library type specific and type is listed as all
+    //this fixes type
+    if (type === "all" && (attr != "name" || attr != "year")) {
+        if (attr === "artist" || attr === "song_genre" || (attr === "type" && attr_name === "song")) {
+            type = "song";
+        }
+        else if (attr === "director" || attr === "actors" || attr === "movie_genre" || (attr === "type" && attr_name === "movie")) {
+            type = "movie";
+        }
+        else if (attr === "photographer" || (attr === "type" && attr_name === "photo")) {
+            type = "photo";
+        }
+    }
+    //fixes attribute if "genre" is given with a type
+    if (type === "movie" && attr === "genre") {
+        attr = "movie_genre";
+    }
+    if (type === "song" && attr === "genre") {
+        attr = "song_genre";
+    }
+
+    //if a type parameter is provided   
     if (type === "song" || type === "movie" || type === "photo") {
         for (let x of library[type]) {
             if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
@@ -206,20 +235,15 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
                     return_items.push(x);
                 }
                 else {
-                    //return sorted by name
-                    //so worst case is O(N)
-                    //where instead of sorting it after is O(N Log N)
-
-                    //inserts the next element in the array to be returned
+                    //inserts element in sorted order
+                    //so worst case for operation is O(N) instead of O(log N)
                     return_items = return_sorted_items(return_items, x);
                 }
             }
         }
-        // console.log(return_items);
-
         return return_items;
     }
-    //search all attributes
+    //search all attributes if no type is given
     else {
 
         for (let y in library) {
@@ -228,14 +252,11 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
                     //if no items in array
                     if (return_items.length === 0) {
                         return_items.push(x);
-                        // console.log(x);
                     }
                     else {
                         //inserts element in sorted order                         
                         //so worst case is O(N)
-                        //where instead of sorting it after inserting is O(N Log N)   
-
-
+                        //where instead of sorting it after inserting is O(N Log N) 
                         return_items = return_sorted_items(return_items, x);
 
                     }
@@ -243,12 +264,56 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all"):
 
             }
         }
-        // console.log(return_items);
         return return_items;
 
     }
 
 
 }
-let stuff = filterBy("artist", "Bey");
-console.log(stuff);
+
+function borrow(attr_case: String, attr_name_case, type_case: String = "all") {
+    let search = filterBy(attr_case, attr_name_case, type_case);
+    let current_date = new Date();
+    let current_year = current_date.getFullYear();
+    let items_borrowed = [];
+    let items_not_borrowed = [];
+    let items_already_borrowed = [];
+    let return_string = "";
+    for (let x of search) {
+        if (x["year"] < (current_year - 1) && (borrowed.indexOf(x) === -1)) {
+            borrowed.push(x);
+            items_borrowed.push(x["name"]);
+        }
+        else if ((borrowed.indexOf(x) !== -1)) {
+            items_already_borrowed.push(x["name"]);
+        }
+        else {
+            items_not_borrowed.push(x["name"]);
+        }
+    }
+    if (items_borrowed.length > 0) {
+        return_string += "You borrowed " + items_borrowed.join(",");
+        return_string += "\n"
+    }
+    if (items_already_borrowed.length > 0) {
+        return_string += "You have already borrowed " + items_already_borrowed.join(",");
+        return_string += "\n"
+    }
+    if (items_not_borrowed.length > 0) {
+        let these_this = "";
+        if(items_not_borrowed.length >1){
+            these_this="these items are";
+        }
+        else{
+            these_this = "this item is";
+        }
+        return_string += "You were unable to borrow " + items_not_borrowed.join(",") + " because "+ these_this + " too new.";
+    }
+    return return_string;
+
+}
+let stuff = filterBy("year", "2016");
+// console.log(stuff);
+let borrowing = borrow("artist", "beyonce");
+console.log(borrowing);
+

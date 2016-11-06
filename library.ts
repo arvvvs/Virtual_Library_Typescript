@@ -48,10 +48,10 @@ function addSong(song: librarySong) {
 }
 //function to insert element in sorted order
 // based on the item's name or year released
-var return_sorted_items = (return_items, x, sortBy = "name") => {
+var return_sorted_items = (return_items, x) => {
     for (let i = 0; i < return_items.length; i++) {
 
-        if (return_items[i].sortBy > x.sortBy) {
+        if (return_items[i]["name"] > x["name"]) {
             //if the first element is larger than the element
             //we're seeking to insert
             if (i === 0) {
@@ -168,6 +168,7 @@ let vivaldi_summer = {
 };
 let winter_horseman = { name: "Winter Horseman", year: 2016, photographer: "Anthony Lau", type: "Photo" };
 let whiskey_tango_foxtrot = { name: "Whiskey Tango Foxtrot", year: 2016, director: ["Glenn Ficarra", "John Requa"], actors: ["Tina Fey", "Margot Robbie", "Martin Freeman", "Alfred Molina", "Christopher Abbot", "Billy Bob Thorton"], movie_genre: "Comedy", length: length_setter_movies(1, 52), type: "Movie" }
+//adds test item to library
 addSong(moonlight_sonata);
 addSong(slay);
 addSong(crazy_in_love)
@@ -229,19 +230,37 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all", 
     //if a type parameter is provided   
     if (type === "song" || type === "movie" || type === "photo") {
         for (let x of library[type]) {
+            //searches to see if partial attributes matches what we're searching
             if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
                 //insert into array sorted
                 if (return_items.length === 0) {
-                    return_items.push(x);
+                    //Provides more accurate matching for year (makes sure the years are exact)
+                    if (attr !== "year") {
+                        return_items.push(x);
+                    }
+                    else {
+                        if (x[attr] === attr_name) {
+                            return_items.push(x);
+
+                        }
+                    }
                 }
                 else {
                     //inserts element in sorted order
                     //so worst case for operation is O(N) instead of O(log N)
-                    return_items = return_sorted_items(return_items, x);
+                    if (attr !== "year") {
+                        return_items.push(x);
+                    }
+                    else {
+                        if (x[attr] === attr_name) {
+                            return_items.push(x);
+
+                        }
+                    }
                 }
             }
+            return return_items;
         }
-        return return_items;
     }
     //search all attributes if no type is given
     else {
@@ -249,48 +268,83 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all", 
         for (let y in library) {
             for (let x of library[y]) {
                 if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
-                    //if no items in array
+                    //insert into array sorted
                     if (return_items.length === 0) {
-                        return_items.push(x);
+                        //Provides more accurate matching for year (makes sure the years are exact)
+                        if (attr !== "year") {
+                            return_items.push(x);
+                        }
+                        else {
+                            if (x[attr] === attr_name) {
+                                return_items.push(x);
+
+                            }
+                        }
                     }
                     else {
-                        //inserts element in sorted order                         
-                        //so worst case is O(N)
-                        //where instead of sorting it after inserting is O(N Log N) 
-                        return_items = return_sorted_items(return_items, x);
+                        //inserts element in sorted order
+                        //so worst case for operation is O(N) instead of O(log N)
+                        if (attr !== "year") {
+                            return_items.push(x);
+                        }
+                        else {
+                            if (x[attr] === attr_name) {
+                                return_items.push(x);
 
+                            }
+                        }
                     }
                 }
-
             }
+
         }
-        return return_items;
-
     }
-
+    return return_items;
 
 }
 
+
+}
+/*
+* The borrow function uses the filterBy function to find the items
+* The user wants to borrow and then checks to see if they can be borrowed
+* The item can only be borrowed if and only if the item is over a year old
+* and not already borrowed.
+* The function will return a string telling the user which items he/she borrowed
+* and which items they were unable to borrow and why
+*/
 function borrow(attr_case: String, attr_name_case, type_case: String = "all") {
+    //Uses the filterBy function to search for user query
     let search = filterBy(attr_case, attr_name_case, type_case);
+    //Gets the current year
     let current_date = new Date();
     let current_year = current_date.getFullYear();
+    //Stores the names of the items we're borrowing, 
+    //items already borrowed, 
+    //and items too new to borrow
     let items_borrowed = [];
     let items_not_borrowed = [];
     let items_already_borrowed = [];
+    //contains the information to be returned in a user readable way
     let return_string = "";
+
     for (let x of search) {
+        //checks to see if it's old enough to be borrowed
+        //and if it's already been borrowed
         if (x["year"] < (current_year - 1) && (borrowed.indexOf(x) === -1)) {
             borrowed.push(x);
             items_borrowed.push(x["name"]);
         }
+        //adds name to already borrowed list if borrowed
         else if ((borrowed.indexOf(x) !== -1)) {
             items_already_borrowed.push(x["name"]);
         }
+        //if item is too old pushes its name to items_not_borrowed array
         else {
             items_not_borrowed.push(x["name"]);
         }
     }
+    //Calibrates the grammer/language of return statement
     if (items_borrowed.length > 0) {
         return_string += "You borrowed " + items_borrowed.join(",");
         return_string += "\n"
@@ -301,19 +355,21 @@ function borrow(attr_case: String, attr_name_case, type_case: String = "all") {
     }
     if (items_not_borrowed.length > 0) {
         let these_this = "";
-        if(items_not_borrowed.length >1){
-            these_this="these items are";
+        if (items_not_borrowed.length > 1) {
+            these_this = "these items are";
         }
-        else{
+        else {
             these_this = "this item is";
         }
-        return_string += "You were unable to borrow " + items_not_borrowed.join(",") + " because "+ these_this + " too new.";
+        return_string += "You were unable to borrow " + items_not_borrowed.join(",") + " because " + these_this + " too new.";
     }
+    //returns a string telling user of items they borrowed,
+    //and they were unable to borrow
     return return_string;
 
 }
-let stuff = filterBy("year", "2016");
-// console.log(stuff);
-let borrowing = borrow("artist", "beyonce");
-console.log(borrowing);
+let stuff = filterBy("year", 20);
+console.log(stuff);
+let borrowing = borrow("year", "2015");
+// console.log(borrowing);
 

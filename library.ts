@@ -203,10 +203,10 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all", 
     let attr_split = String(attr_case).toLowerCase().split(" ");
     let attr = attr_split.join("_");
     let attr_name = String(attr_name_case).toLowerCase();
-
     //array for sorted and filtered media to be returned in
     let return_items = [];
-    //if attribute is library type specific and type is listed as all
+    //if attribute is library type specific (so if it's "song_genre"" or "director" indicating type is song and movie respectively) 
+    //and type is listed as all
     //this fixes type
     if (type === "all" && (attr != "name" || attr != "year")) {
         if (attr === "artist" || attr === "song_genre" || (attr === "type" && attr_name === "song")) {
@@ -239,32 +239,35 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all", 
                         return_items.push(x);
                     }
                     else {
-                        if (x[attr] === attr_name) {
+                        if (String(x[attr]) === String(attr_name)) {
                             return_items.push(x);
 
                         }
                     }
                 }
+
                 else {
                     //inserts element in sorted order
                     //so worst case for operation is O(N) instead of O(log N)
                     if (attr !== "year") {
-                        return_items.push(x);
+
+                        return_items = return_sorted_items(return_items, x);
                     }
                     else {
-                        if (x[attr] === attr_name) {
-                            return_items.push(x);
+                        if (String(x[attr]) === String(attr_name)) {
+                            return_items = return_sorted_items(return_items, x);
 
                         }
                     }
                 }
             }
-            return return_items;
         }
+                return return_items;            
+        
     }
+
     //search all attributes if no type is given
     else {
-
         for (let y in library) {
             for (let x of library[y]) {
                 if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
@@ -275,7 +278,7 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all", 
                             return_items.push(x);
                         }
                         else {
-                            if (x[attr] === attr_name) {
+                            if (String(x[attr]) === String(attr_name)) {
                                 return_items.push(x);
 
                             }
@@ -285,11 +288,12 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all", 
                         //inserts element in sorted order
                         //so worst case for operation is O(N) instead of O(log N)
                         if (attr !== "year") {
-                            return_items.push(x);
+
+                            return_items = return_sorted_items(return_items, x);
                         }
                         else {
-                            if (x[attr] === attr_name) {
-                                return_items.push(x);
+                            if (String(x[attr]) === String(attr_name)) {
+                                return_items = return_sorted_items(return_items, x);
 
                             }
                         }
@@ -304,7 +308,7 @@ function filterBy(attr_case: String, attr_name_case, type_case: String = "all", 
 }
 
 
-}
+
 /*
 * The borrow function uses the filterBy function to find the items
 * The user wants to borrow and then checks to see if they can be borrowed
@@ -368,8 +372,8 @@ function borrow(attr_case: String, attr_name_case, type_case: String = "all") {
     return return_string;
 
 }
-let stuff = filterBy("year", 20);
+let stuff = filterBy("year", 2017,"Movie");
 console.log(stuff);
-let borrowing = borrow("year", "2015");
+// let borrowing = borrow("year", "2015");
 // console.log(borrowing);
 

@@ -173,7 +173,8 @@ function filterBy(attr_case, attr_name_case, type_case, sortBy) {
     var attr_name = String(attr_name_case).toLowerCase();
     //array for sorted and filtered media to be returned in
     var return_items = [];
-    //if attribute is library type specific and type is listed as all
+    //if attribute is library type specific (so if it's "song_genre"" or "director" indicating type is song and movie respectively) 
+    //and type is listed as all
     //this fixes type
     if (type === "all" && (attr != "name" || attr != "year")) {
         if (attr === "artist" || attr === "song_genre" || (attr === "type" && attr_name === "song")) {
@@ -206,7 +207,7 @@ function filterBy(attr_case, attr_name_case, type_case, sortBy) {
                         return_items.push(x);
                     }
                     else {
-                        if (x[attr] === attr_name) {
+                        if (String(x[attr]) === String(attr_name)) {
                             return_items.push(x);
                         }
                     }
@@ -215,17 +216,17 @@ function filterBy(attr_case, attr_name_case, type_case, sortBy) {
                     //inserts element in sorted order
                     //so worst case for operation is O(N) instead of O(log N)
                     if (attr !== "year") {
-                        return_items.push(x);
+                        return_items = return_sorted_items(return_items, x);
                     }
                     else {
-                        if (x[attr] === attr_name) {
-                            return_items.push(x);
+                        if (String(x[attr]) === String(attr_name)) {
+                            return_items = return_sorted_items(return_items, x);
                         }
                     }
                 }
             }
-            return return_items;
         }
+        return return_items;
     }
     else {
         for (var y in library) {
@@ -239,7 +240,7 @@ function filterBy(attr_case, attr_name_case, type_case, sortBy) {
                             return_items.push(x);
                         }
                         else {
-                            if (x[attr] === attr_name) {
+                            if (String(x[attr]) === String(attr_name)) {
                                 return_items.push(x);
                             }
                         }
@@ -248,11 +249,11 @@ function filterBy(attr_case, attr_name_case, type_case, sortBy) {
                         //inserts element in sorted order
                         //so worst case for operation is O(N) instead of O(log N)
                         if (attr !== "year") {
-                            return_items.push(x);
+                            return_items = return_sorted_items(return_items, x);
                         }
                         else {
-                            if (x[attr] === attr_name) {
-                                return_items.push(x);
+                            if (String(x[attr]) === String(attr_name)) {
+                                return_items = return_sorted_items(return_items, x);
                             }
                         }
                     }
@@ -323,8 +324,8 @@ function borrow(attr_case, attr_name_case, type_case) {
     //and they were unable to borrow
     return return_string;
 }
-var stuff = filterBy("year", 20);
+var stuff = filterBy("year", 2017, "Movie");
 console.log(stuff);
-var borrowing = borrow("year", "2015");
+// let borrowing = borrow("year", "2015");
 // console.log(borrowing);
 //# sourceMappingURL=library.js.map

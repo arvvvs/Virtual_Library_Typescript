@@ -62,20 +62,20 @@ export class Library {
     get borrowed_items() {
         return this.borrowed;
     }
-    public addMovie(photo: libraryMovie) {
+    addMovie(photo: libraryMovie) {
         this.library.movie.push(photo);
     }
-    public addPhoto(movie: libraryPhoto) {
+    addPhoto(movie: libraryPhoto) {
         this.library.photo.push(movie);
     }
-    public addSong(song: librarySong) {
+    addSong(song: librarySong) {
         this.library.song.push(song);
     }
 
 
     //helper function created to maintain a consistent
     //looking length of movie
-    public length_setter_movies = (hour: number = -1, min: number = -1) => {
+    length_setter_movies = (hour: number = -1, min: number = -1) => {
         if ((hour < 0 || min < 0) || (hour === 0 && min === 0)) {
             return "N/A";
         }
@@ -86,7 +86,7 @@ export class Library {
         return hour + "h" + " " + min + "m";
     }
     //to help maitain a consistent looking length of songs
-    public length_setter_songs = (minutes: number = -1, seconds: number = -1) => {
+    length_setter_songs = (minutes: number = -1, seconds: number = -1) => {
         if ((minutes < 0 || seconds < 0) || (minutes === 0 && seconds === 0)) {
             return "N/A";
         }
@@ -101,7 +101,7 @@ export class Library {
     searches by attribute, attribute name and (optionally) type
     if no type is given then it searches across all items in library
     */
-    public filterBy(attr_case: String, attr_name_case, type_case: String = "all"): Array<Object> {
+    filterBy(attr_case: String, attr_name_case, type_case: String = "all"): Array<Object> {
         //makes all parameters lower case for better searching
         let type = type_case.toLowerCase();
         //if attr_case is given as something like Song Genre 
@@ -161,7 +161,7 @@ export class Library {
     * or if type is movie and attribute is genre it returns movie_genre
     * this modifies type to make the query search faster.
     */
-    private optimizeQuery(attr, attr_name, type = "all") {
+    optimizeQuery(attr, attr_name, type = "all") {
 
         if ((type === "all" || type === "") && (attr != "name" || attr != "year")) {
             if (attr === "artist" || attr === "song_genre" || (attr === "type" && attr_name === "song")) {
@@ -195,7 +195,7 @@ export class Library {
     * attribute name is the type of attribute
     * return_items is the array with all the matches we've found so far
     */
-    private addItem = (library_item, attr, attr_name, return_items) => {
+    addItem = (library_item, attr, attr_name, return_items) => {
         //if user provided an attribute
         if (attr !== "") {
             this.queryMatch(attr, attr_name, library_item, return_items);
@@ -210,7 +210,7 @@ export class Library {
     /*
     * checks to see if there exists an attribute type in the library item object
     */
-    private queryMatch(attr, attr_name, library_item, return_items) {
+    queryMatch(attr, attr_name, library_item, return_items) {
         if ((String(library_item[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
 
             //if no item in array
@@ -246,7 +246,7 @@ export class Library {
     }
     //function to insert element in sorted order
     // based on the item's name or year released
-    private return_sorted_items = (return_items, matched_item) => {
+    return_sorted_items = (return_items, matched_item) => {
         for (let i = 0; i < return_items.length; i++) {
 
             if (return_items[i]["name"] > matched_item["name"]) {
@@ -275,7 +275,7 @@ export class Library {
     * The function will return a string telling the user which items he/she borrowed
     * and which items they were unable to borrow and why
     */
-    public borrow(attr_case: String, attr_name_case, type_case: String = "all") {
+    borrow(attr_case: String, attr_name_case, type_case: String = "all") {
         //Uses the filterBy function to search for user query
         let search = this.filterBy(attr_case, attr_name_case, type_case);
         //Gets the current year

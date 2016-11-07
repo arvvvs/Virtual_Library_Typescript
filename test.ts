@@ -106,7 +106,7 @@ library.addPhoto(winter_horseman);
 library.addPhoto(test_name_as_number);
 // console.log(library.filterBy("","2016"));
 // console.log(library.filterBy("", library.length_setter_movies(0,12)));
-console.log(library.filterBy('genre',"bounce", "song"));
+console.log(library.filterBy('',"bey", "song"));
 
 
 // console.log(library.library_movie);

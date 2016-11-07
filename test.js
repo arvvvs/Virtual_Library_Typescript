@@ -75,6 +75,7 @@ var vivaldi_summer = {
     type: "Song"
 };
 var winter_horseman = { name: "Winter Horseman", year: 2016, photographer: "Anthony Lau", type: "Photo" };
+var test_horseman = { name: "2016", year: 2015, photographer: "Anthony Lau", type: "Photo" };
 var whiskey_tango_foxtrot = { name: "Whiskey Tango Foxtrot", year: 2016, director: ["Glenn Ficarra", "John Requa"], actors: ["Tina Fey", "Margot Robbie", "Martin Freeman", "Alfred Molina", "Christopher Abbot", "Billy Bob Thorton"], movie_genre: "Comedy", length: library.length_setter_movies(1, 52), type: "Movie" };
 var stutterer = { name: "Stutter", year: 2015, director: ["Benjamin Cleary"], actors: ["Matthew Needham", "Eric Richard"], movie_genre: "Short Film", length: library.length_setter_movies(0, 12), type: "Movie" };
 //adds test item to library
@@ -96,6 +97,8 @@ library.addPhoto(afghan_girl);
 library.addPhoto(licoln_photo);
 library.addPhoto(migrant_mother);
 library.addPhoto(winter_horseman);
-// console.log(library.filterBy("year", "2016"));
-console.log(library.library_movie);
+library.addPhoto(test_horseman);
+// console.log(library.filterBy("","2016"));
+console.log(library.filterBy("photographer", "", ""));
+// console.log(library.library_movie); 
 //# sourceMappingURL=test.js.map

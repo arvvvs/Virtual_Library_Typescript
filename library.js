@@ -45,30 +45,13 @@ var Library = (function () {
         * Checks to see if attribute matches the search query and adds it to return items if it does
         */
         this.addItem = function (x, attr, attr_name, return_items) {
-            if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
-                //insert into array sorted
-                if (return_items.length === 0) {
-                    //Provides more accurate matching for year (makes sure the years are exact)
-                    if (attr !== "year") {
-                        return_items.push(x);
-                    }
-                    else {
-                        if (String(x[attr]) === String(attr_name)) {
-                            return_items.push(x);
-                        }
-                    }
-                }
-                else {
-                    //inserts element in sorted order
-                    //so worst case for operation is O(N) instead of O(log N)
-                    if (attr !== "year") {
-                        return_items = this.return_sorted_items(return_items, x);
-                    }
-                    else {
-                        if (String(x[attr]) === String(attr_name)) {
-                            return_items = this.return_sorted_items(return_items, x);
-                        }
-                    }
+            //if attribute field is not empty
+            if (attr !== "") {
+                this.queryMatch(attr, attr_name, x, return_items);
+            }
+            else {
+                for (var i in x) {
+                    this.queryMatch(i, attr_name, x, return_items);
                 }
             }
         };
@@ -150,7 +133,7 @@ var Library = (function () {
         if (type_case === void 0) { type_case = "all"; }
         //makes all parameters lower case for better searching
         var type = type_case.toLowerCase();
-        //if attr_case is something like Song Genre 
+        //if attr_case is given as something like Song Genre 
         //it converts it to song_genre to match the key in 
         //the library data structure
         //if attr_case is something like "Year" then it will be "year"
@@ -159,29 +142,9 @@ var Library = (function () {
         var attr_name = String(attr_name_case).toLowerCase();
         //array for sorted and filtered media to be returned in
         var return_items = [];
-        //if attribute is library type specific (so if it's "song_genre"" or "director" indicating type is song and movie respectively) 
-        //and type is listed as all
-        //this fixes type
-        if (type === "all" && (attr != "name" || attr != "year")) {
-            if (attr === "artist" || attr === "song_genre" || (attr === "type" && attr_name === "song")) {
-                type = "song";
-            }
-            else if (attr === "director" || attr === "actors" || attr === "movie_genre" || (attr === "type" && attr_name === "movie")) {
-                type = "movie";
-            }
-            else if (attr === "photographer" || (attr === "type" && attr_name === "photo")) {
-                type = "photo";
-            }
-        }
-        //fixes attribute if "genre" is given with a type
-        //so if attribute is "genre" and type is "movie"
-        //fixes attribute to be movie_genre
-        if (type === "movie" && attr === "genre") {
-            attr = "movie_genre";
-        }
-        if (type === "song" && attr === "genre") {
-            attr = "song_genre";
-        }
+        //optimizes query
+        attr, attr_name, type = this.optimizeQuery(attr, attr_name, type);
+        console.log(type);
         //if a type parameter is provided   
         if (type === "song" || type === "movie" || type === "photo") {
             for (var _i = 0, _a = this.library[type]; _i < _a.length; _i++) {
@@ -212,6 +175,66 @@ var Library = (function () {
                 }
             }
             return return_items;
+        }
+    };
+    /*If attribute is library type specific (so if it's "song_genre"" or "director" indicating type is song and movie respectively)
+    * and type is listed as all
+    * this modifies type to make the query search faster.
+    */
+    Library.prototype.optimizeQuery = function (attr, attr_name, type) {
+        if (type === void 0) { type = "all"; }
+        if ((type === "all" || type === "") && (attr != "name" || attr != "year")) {
+            if (attr === "artist" || attr === "song_genre" || (attr === "type" && attr_name === "song")) {
+                type = "song";
+            }
+            else if (attr === "director" || attr === "actors" || attr === "movie_genre" || (attr === "type" && attr_name === "movie")) {
+                type = "movie";
+            }
+            else if (attr === "photographer" || (attr === "type" && attr_name === "photo")) {
+                type = "photo";
+            }
+        }
+        //fixes attribute if "genre" is given with a type
+        //so if attribute is "genre" and type is "movie"
+        //fixes attribute to be movie_genre
+        if (type === "movie" && attr === "genre") {
+            attr = "movie_genre";
+        }
+        if (type === "song" && attr === "genre") {
+            attr = "song_genre";
+        }
+        return attr, attr_name, type;
+    };
+    /*
+    * checks to see if there exists an attribute type in the library item object
+    */
+    Library.prototype.queryMatch = function (attr, attr_name, x, return_items) {
+        if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
+            //if no item in array
+            if (return_items.length === 0) {
+                //makes sure the years are exact 
+                //so that a a search for the year 20 doesn't show results for the year 200
+                if (attr !== "year") {
+                    return_items.push(x);
+                }
+                else {
+                    if (String(x[attr]) === String(attr_name)) {
+                        return_items.push(x);
+                    }
+                }
+            }
+            else {
+                //inserts element in sorted order
+                //so worst case for operation is O(N) instead of O(log N)
+                if (attr !== "year") {
+                    this.return_sorted_items(return_items, x);
+                }
+                else {
+                    if (String(x[attr]) === String(attr_name)) {
+                        this.return_sorted_items(return_items, x);
+                    }
+                }
+            }
         }
     };
     /*

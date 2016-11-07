@@ -286,20 +286,20 @@ export class Library {
         //contains the information to be returned in a user readable way
         let return_string = "";
 
-        for (let x of search) {
+        for (let items of search) {
             //checks to see if it's old enough to be borrowed
             //and if it's already been borrowed
-            if (x["year"] < (current_year - 1) && (this.borrowed.indexOf(x) === -1)) {
-                this.borrowed.push(x);
-                items_borrowed.push(x["name"]);
+            if (items["year"] < (current_year - 1) && (this.borrowed.indexOf(items) === -1)) {
+                this.borrowed.push(items);
+                items_borrowed.push(items["name"]);
             }
             //adds name to already borrowed list if borrowed
-            else if ((this.borrowed.indexOf(x) !== -1)) {
-                items_already_borrowed.push(x["name"]);
+            else if ((this.borrowed.indexOf(items) !== -1)) {
+                items_already_borrowed.push(items["name"]);
             }
             //if item is too old pushes its name to items_not_borrowed array
             else {
-                items_not_borrowed.push(x["name"]);
+                items_not_borrowed.push(items["name"]);
             }
         }
         //Calibrates the grammer/language of return statement

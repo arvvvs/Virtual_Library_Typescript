@@ -270,18 +270,18 @@ var Library = (function () {
         //contains the information to be returned in a user readable way
         var return_string = "";
         for (var _i = 0, search_1 = search; _i < search_1.length; _i++) {
-            var x = search_1[_i];
+            var items = search_1[_i];
             //checks to see if it's old enough to be borrowed
             //and if it's already been borrowed
-            if (x["year"] < (current_year - 1) && (this.borrowed.indexOf(x) === -1)) {
-                this.borrowed.push(x);
-                items_borrowed.push(x["name"]);
+            if (items["year"] < (current_year - 1) && (this.borrowed.indexOf(items) === -1)) {
+                this.borrowed.push(items);
+                items_borrowed.push(items["name"]);
             }
-            else if ((this.borrowed.indexOf(x) !== -1)) {
-                items_already_borrowed.push(x["name"]);
+            else if ((this.borrowed.indexOf(items) !== -1)) {
+                items_already_borrowed.push(items["name"]);
             }
             else {
-                items_not_borrowed.push(x["name"]);
+                items_not_borrowed.push(items["name"]);
             }
         }
         //Calibrates the grammer/language of return statement

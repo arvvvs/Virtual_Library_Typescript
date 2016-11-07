@@ -102,6 +102,6 @@ library.addPhoto(winter_horseman);
 library.addPhoto(test_horseman);
 // console.log(library.filterBy("","2016"));
 // console.log(library.filterBy("", library.length_setter_movies(0,12)));
-console.log(library.filterBy('year', 20));
+console.log(library.filterBy('director', "scott", "movie"));
 // console.log(library.library_movie); 
 //# sourceMappingURL=test.js.map

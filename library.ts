@@ -114,9 +114,11 @@ export class Library {
         //array for sorted and filtered media to be returned in
         let return_items = [];
         //optimizes query
-        attr, attr_name, type = this.optimizeQuery(attr, attr_name, type);
-
-
+        let optimized = this.optimizeQuery(attr, attr_name, type);
+        attr = optimized["attribute"];
+        attr_name = optimized["attribute_name"];
+        type = optimized["media_type"];
+       
         //if a type parameter is provided   
         if (type === "song" || type === "movie" || type === "photo") {
             for (let library_item of this.library[type]) {
@@ -181,7 +183,9 @@ export class Library {
         if (type === "song" && attr === "genre") {
             attr = "song_genre";
         }
-        return attr, attr_name, type
+        
+
+        return {"attribute":attr, "attribute_name":attr_name, "media_type":type}
     }
     /*
     * Checks to see if attribute matches the search query and adds it to return items if it does

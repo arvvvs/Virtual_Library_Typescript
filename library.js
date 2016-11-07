@@ -153,7 +153,10 @@ var Library = (function () {
         //array for sorted and filtered media to be returned in
         var return_items = [];
         //optimizes query
-        attr, attr_name, type = this.optimizeQuery(attr, attr_name, type);
+        var optimized = this.optimizeQuery(attr, attr_name, type);
+        attr = optimized["attribute"];
+        attr_name = optimized["attribute_name"];
+        type = optimized["media_type"];
         //if a type parameter is provided   
         if (type === "song" || type === "movie" || type === "photo") {
             for (var _i = 0, _a = this.library[type]; _i < _a.length; _i++) {
@@ -213,7 +216,7 @@ var Library = (function () {
         if (type === "song" && attr === "genre") {
             attr = "song_genre";
         }
-        return attr, attr_name, type;
+        return { "attribute": attr, "attribute_name": attr_name, "media_type": type };
     };
     /*
     * checks to see if there exists an attribute type in the library item object

@@ -1,12 +1,16 @@
 /*
-*Interfaces are a feature form typescript.
+*Interfaces are a feature from Typescript.
 *They allow me to consitently shape how an object
 *containing a song/movie/photo will be cataloged
 *It doesn't transpile to javascript
 */
 "use strict";
+/*Created a class library because it would allow me to utilize modules
+*and allow my code to be better organized and more easily tested
+*/
 var Library = (function () {
     function Library() {
+        var _this = this;
         //library is an object that will store
         //with key being the type (song/movie/photo)
         //and value being an object containing information 
@@ -14,8 +18,8 @@ var Library = (function () {
         this.library = { song: [], movie: [], photo: [] };
         // contains items borrowed from the library
         this.borrowed = [];
-        //function created to maintain a consistent
-        //looking length of movie or song
+        //helper function created to maintain a consistent
+        //looking length of movie
         this.length_setter_movies = function (hour, min) {
             if (hour === void 0) { hour = -1; }
             if (min === void 0) { min = -1; }
@@ -43,34 +47,39 @@ var Library = (function () {
         };
         /*
         * Checks to see if attribute matches the search query and adds it to return items if it does
+        * where:
+        * library item is the item we're  seeing that matches our query
+        * attr is attribute we're searching for
+        * attribute name is the type of attribute
+        * return_items is the array with all the matches we've found so far
         */
-        this.addItem = function (x, attr, attr_name, return_items) {
-            //if attribute field is not empty
+        this.addItem = function (library_item, attr, attr_name, return_items) {
+            //if user provided an attribute
             if (attr !== "") {
-                this.queryMatch(attr, attr_name, x, return_items);
+                _this.queryMatch(attr, attr_name, library_item, return_items);
             }
             else {
-                for (var i in x) {
-                    this.queryMatch(i, attr_name, x, return_items);
+                for (var attribute in library_item) {
+                    _this.queryMatch(attribute, attr_name, library_item, return_items);
                 }
             }
         };
         //function to insert element in sorted order
         // based on the item's name or year released
-        this.return_sorted_items = function (return_items, x) {
+        this.return_sorted_items = function (return_items, matched_item) {
             for (var i = 0; i < return_items.length; i++) {
-                if (return_items[i]["name"] > x["name"]) {
+                if (return_items[i]["name"] > matched_item["name"]) {
                     //if the first element is larger than the element
                     //we're seeking to insert
                     if (i === 0) {
-                        return_items.splice(i, 0, x);
+                        return_items.splice(i, 0, matched_item);
                         return return_items;
                     }
-                    return_items.splice(i - 1, 0, x);
+                    return_items.splice(i - 1, 0, matched_item);
                     return return_items;
                 }
                 else {
-                    return_items.push(x);
+                    return_items.push(matched_item);
                     return return_items;
                 }
             }
@@ -93,7 +102,7 @@ var Library = (function () {
         configurable: true
     });
     Object.defineProperty(Library.prototype, "library_song", {
-        //returns entire library sorted
+        //returns all songs in library sorted
         get: function () {
             return this.filterBy("type", "song");
         },
@@ -101,7 +110,7 @@ var Library = (function () {
         configurable: true
     });
     Object.defineProperty(Library.prototype, "library_photo", {
-        //returns library sorted
+        //returns all photos in library sorted
         get: function () {
             return this.filterBy("type", "photo");
         },
@@ -109,6 +118,7 @@ var Library = (function () {
         configurable: true
     });
     Object.defineProperty(Library.prototype, "borrowed_items", {
+        //retuns borrowed items
         get: function () {
             return this.borrowed;
         },
@@ -144,41 +154,41 @@ var Library = (function () {
         var return_items = [];
         //optimizes query
         attr, attr_name, type = this.optimizeQuery(attr, attr_name, type);
-        console.log(type);
         //if a type parameter is provided   
         if (type === "song" || type === "movie" || type === "photo") {
             for (var _i = 0, _a = this.library[type]; _i < _a.length; _i++) {
-                var x = _a[_i];
-                this.addItem(x, attr, attr_name, return_items);
+                var library_item = _a[_i];
+                this.addItem(library_item, attr, attr_name, return_items);
             }
             return return_items;
         }
         else if (attr === "genre") {
-            for (var y in this.library) {
-                for (var _b = 0, _c = this.library[y]; _b < _c.length; _b++) {
-                    var x = _c[_b];
-                    if (y === "movie") {
-                        this.addItem(x, "movie_" + attr, attr_name, return_items);
+            for (var media_type in this.library) {
+                for (var _b = 0, _c = this.library[media_type]; _b < _c.length; _b++) {
+                    var library_item = _c[_b];
+                    if (media_type === "movie") {
+                        this.addItem(library_item, "movie_" + attr, attr_name, return_items);
                     }
-                    else if (y === "song") {
-                        this.addItem(x, "song_" + attr, attr_name, return_items);
+                    else if (media_type === "song") {
+                        this.addItem(library_item, "song_" + attr, attr_name, return_items);
                     }
                 }
             }
             return return_items;
         }
         else {
-            for (var y in this.library) {
-                for (var _d = 0, _e = this.library[y]; _d < _e.length; _d++) {
-                    var x = _e[_d];
-                    this.addItem(x, attr, attr_name, return_items);
+            for (var media_type in this.library) {
+                for (var _d = 0, _e = this.library[media_type]; _d < _e.length; _d++) {
+                    var library_item = _e[_d];
+                    this.addItem(library_item, attr, attr_name, return_items);
                 }
             }
             return return_items;
         }
     };
     /*If attribute is library type specific (so if it's "song_genre"" or "director" indicating type is song and movie respectively)
-    * and type is listed as all
+    * and type is listed as all or ""
+    * or if type is movie and attribute is genre it returns movie_genre
     * this modifies type to make the query search faster.
     */
     Library.prototype.optimizeQuery = function (attr, attr_name, type) {
@@ -208,30 +218,29 @@ var Library = (function () {
     /*
     * checks to see if there exists an attribute type in the library item object
     */
-    Library.prototype.queryMatch = function (attr, attr_name, x, return_items) {
-        if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
+    Library.prototype.queryMatch = function (attr, attr_name, library_item, return_items) {
+        if ((String(library_item[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
             //if no item in array
             if (return_items.length === 0) {
                 //makes sure the years are exact 
-                //so that a a search for the year 20 doesn't show results for the year 200
+                //so that a a search for the year 20 doesn't show results for the year 200 or 2000 or 2016
                 if (attr !== "year") {
-                    return_items.push(x);
+                    return_items.push(library_item);
                 }
                 else {
-                    if (String(x[attr]) === String(attr_name)) {
-                        return_items.push(x);
+                    if (String(library_item[attr]) === String(attr_name)) {
+                        return_items.push(library_item);
                     }
                 }
             }
             else {
-                //inserts element in sorted order
-                //so worst case for operation is O(N) instead of O(log N)
+                //makes sure the years are exact 
                 if (attr !== "year") {
-                    this.return_sorted_items(return_items, x);
+                    this.return_sorted_items(return_items, library_item);
                 }
                 else {
-                    if (String(x[attr]) === String(attr_name)) {
-                        this.return_sorted_items(return_items, x);
+                    if (String(library_item[attr]) === String(attr_name)) {
+                        this.return_sorted_items(return_items, library_item);
                     }
                 }
             }

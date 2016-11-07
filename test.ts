@@ -1,8 +1,9 @@
 import { Library as Library } from "./library"
-
+//create new library object 
 let library = new Library();
 
 //Creating items to add and test for the library
+//helps break up code to be more manageable
 let myPic = { name: 'christmas santa', year: 1997, photographer: 'me', type: 'Photo' };
 
 let christmas_party = {
@@ -104,7 +105,8 @@ library.addPhoto(migrant_mother);
 library.addPhoto(winter_horseman);
 library.addPhoto(test_horseman);
 // console.log(library.filterBy("","2016"));
-console.log(library.filterBy("photographer","",""));
+// console.log(library.filterBy("", library.length_setter_movies(0,12)));
+console.log(library.filterBy('year',20));
 
 
 // console.log(library.library_movie);

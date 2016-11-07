@@ -1,6 +1,6 @@
 
 /*
-*Interfaces are a feature form typescript.  
+*Interfaces are a feature from Typescript.  
 *They allow me to consitently shape how an object
 *containing a song/movie/photo will be cataloged
 *It doesn't transpile to javascript
@@ -30,6 +30,9 @@ interface libraryPhoto {
     photographer: String;
     type: String;
 }
+/*Created a class library because it would allow me to utilize modules
+*and allow my code to be better organized and more easily tested
+*/
 export class Library {
 
     //library is an object that will store
@@ -47,22 +50,21 @@ export class Library {
     get library_movie() {
         return this.filterBy("type", "movie");
     }
-    //returns entire library sorted
+    //returns all songs in library sorted
     get library_song() {
         return this.filterBy("type", "song");
     }
-    //returns library sorted
+    //returns all photos in library sorted
     get library_photo() {
         return this.filterBy("type", "photo");
     }
+    //retuns borrowed items
     get borrowed_items() {
         return this.borrowed;
     }
     public addMovie(photo: libraryMovie) {
         this.library.movie.push(photo);
-
     }
-
     public addPhoto(movie: libraryPhoto) {
         this.library.photo.push(movie);
     }
@@ -71,8 +73,8 @@ export class Library {
     }
 
 
-    //function created to maintain a consistent
-    //looking length of movie or song
+    //helper function created to maintain a consistent
+    //looking length of movie
     public length_setter_movies = (hour: number = -1, min: number = -1) => {
         if ((hour < 0 || min < 0) || (hour === 0 && min === 0)) {
             return "N/A";
@@ -112,28 +114,25 @@ export class Library {
         //array for sorted and filtered media to be returned in
         let return_items = [];
         //optimizes query
-        
         attr, attr_name, type = this.optimizeQuery(attr, attr_name, type);
-        
-      console.log(type);
-        
+
+
         //if a type parameter is provided   
         if (type === "song" || type === "movie" || type === "photo") {
-            for (let x of this.library[type]) {
-                this.addItem(x, attr, attr_name, return_items);
-
+            for (let library_item of this.library[type]) {
+                this.addItem(library_item, attr, attr_name, return_items);
             }
             return return_items;
         }
         //if a generic "genre" is given as an attribute
         else if (attr === "genre") {
-            for (let y in this.library) {
-                for (let x of this.library[y]) {
-                    if (y === "movie") {
-                        this.addItem(x, "movie_" + attr, attr_name, return_items);
+            for (let media_type in this.library) {
+                for (let library_item of this.library[media_type]) {
+                    if (media_type === "movie") {
+                        this.addItem(library_item, "movie_" + attr, attr_name, return_items);
                     }
-                    else if (y === "song") {
-                        this.addItem(x, "song_" + attr, attr_name, return_items);
+                    else if (media_type === "song") {
+                        this.addItem(library_item, "song_" + attr, attr_name, return_items);
                     }
 
                 }
@@ -143,9 +142,9 @@ export class Library {
         }
         //search all attributes if no type or non existent type is given
         else {
-            for (let y in this.library) {
-                for (let x of this.library[y]) {
-                    this.addItem(x, attr, attr_name, return_items);
+            for (let media_type in this.library) {
+                for (let library_item of this.library[media_type]) {
+                    this.addItem(library_item, attr, attr_name, return_items);
 
                 }
 
@@ -156,12 +155,13 @@ export class Library {
 
     }
     /*If attribute is library type specific (so if it's "song_genre"" or "director" indicating type is song and movie respectively) 
-    * and type is listed as all
+    * and type is listed as all or ""
+    * or if type is movie and attribute is genre it returns movie_genre
     * this modifies type to make the query search faster.
     */
-    private optimizeQuery(attr, attr_name, type="all") {  
+    private optimizeQuery(attr, attr_name, type = "all") {
 
-        if ((type === "all" || type ==="")  && (attr != "name" || attr != "year")) {
+        if ((type === "all" || type === "") && (attr != "name" || attr != "year")) {
             if (attr === "artist" || attr === "song_genre" || (attr === "type" && attr_name === "song")) {
                 type = "song";
             }
@@ -185,49 +185,55 @@ export class Library {
     }
     /*
     * Checks to see if attribute matches the search query and adds it to return items if it does
+    * where:
+    * library item is the item we're  seeing that matches our query
+    * attr is attribute we're searching for
+    * attribute name is the type of attribute
+    * return_items is the array with all the matches we've found so far
     */
-    private addItem = function (x, attr, attr_name, return_items) {
-        //if attribute field is not empty
+    private addItem = (library_item, attr, attr_name, return_items) => {
+        //if user provided an attribute
         if (attr !== "") {
-            this.queryMatch(attr, attr_name, x, return_items);
+            this.queryMatch(attr, attr_name, library_item, return_items);
         }
 
         else {
-            for (let i in x) {
-                this.queryMatch(i, attr_name, x, return_items);
+            for (let attribute in library_item) {
+                this.queryMatch(attribute, attr_name, library_item, return_items);
             }
         }
     }
     /*
     * checks to see if there exists an attribute type in the library item object
     */
-    private queryMatch(attr, attr_name, x, return_items) {
-        if ((String(x[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
+    private queryMatch(attr, attr_name, library_item, return_items) {
+        if ((String(library_item[attr]).toLowerCase()).indexOf(String(attr_name)) !== -1) {
 
             //if no item in array
             if (return_items.length === 0) {
                 //makes sure the years are exact 
-                //so that a a search for the year 20 doesn't show results for the year 200
+                //so that a a search for the year 20 doesn't show results for the year 200 or 2000 or 2016
                 if (attr !== "year") {
-                    return_items.push(x);
+                    return_items.push(library_item);
                 }
                 else {
-                    if (String(x[attr]) === String(attr_name)) {
-                        return_items.push(x);
+                    if (String(library_item[attr]) === String(attr_name)) {
+                        return_items.push(library_item);
 
                     }
                 }
             }
+            //if items already in array
+            //inserts element in sorted order
+            //so worst case for operation is O(N) instead of O(log N)
             else {
-                //inserts element in sorted order
-                //so worst case for operation is O(N) instead of O(log N)
+                //makes sure the years are exact 
                 if (attr !== "year") {
-
-                    this.return_sorted_items(return_items, x);
+                    this.return_sorted_items(return_items, library_item);
                 }
                 else {
-                    if (String(x[attr]) === String(attr_name)) {
-                        this.return_sorted_items(return_items, x);
+                    if (String(library_item[attr]) === String(attr_name)) {
+                        this.return_sorted_items(return_items, library_item);
 
                     }
                 }
@@ -236,21 +242,21 @@ export class Library {
     }
     //function to insert element in sorted order
     // based on the item's name or year released
-    private return_sorted_items = (return_items, x) => {
+    private return_sorted_items = (return_items, matched_item) => {
         for (let i = 0; i < return_items.length; i++) {
 
-            if (return_items[i]["name"] > x["name"]) {
+            if (return_items[i]["name"] > matched_item["name"]) {
                 //if the first element is larger than the element
                 //we're seeking to insert
                 if (i === 0) {
-                    return_items.splice(i, 0, x);
+                    return_items.splice(i, 0, matched_item);
                     return return_items;
                 }
-                return_items.splice(i - 1, 0, x);
+                return_items.splice(i - 1, 0, matched_item);
                 return return_items;
             }
             else {
-                return_items.push(x);
+                return_items.push(matched_item);
                 return return_items;
             }
         }

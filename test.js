@@ -4,12 +4,21 @@ var library_1 = require("./library");
 var library = new library_1.Library();
 //Creating items to add and test for the library
 //helps break up code to be more manageable
+//example of a picture object for testing
 var myPic = { name: 'christmas santa', year: 1997, photographer: 'me', type: 'Photo' };
-var christmas_party = {
+//example of a movie object
+var christmas_party_movie = {
     name: 'Office Christmas Party', year: 2016,
     director: ['Josh Gordon', 'Will Speck'],
     actors: ['Jason Bateman', 'Olivia Munn', 'TJ Miller'],
     movie_genre: "Comedy", length: library.length_setter_movies(1, 20), type: "Movie"
+};
+//example of a song
+var crazy_in_love = {
+    name: "Crazy in Love", year: 2003, artist: ["Beyonce"],
+    song_genre: "R&B",
+    album: "Dangerously in Love", length: library.length_setter_songs(3, 56),
+    type: "Song"
 };
 var ten_cloverfield = {
     name: '10 Cloverfield Lane', year: 2016,
@@ -23,12 +32,6 @@ var slay = {
     album: "Lemonade", length: library.length_setter_songs(3, 26),
     type: "Song"
 };
-var crazy_in_love = {
-    name: "Crazy in Love", year: 2003, artist: ["Beyonce"],
-    song_genre: "R&B",
-    album: "Dangerously in Love", length: library.length_setter_songs(3, 56),
-    type: "Song"
-};
 var doctor_strange = {
     name: "Doctor Strange", year: 2016,
     director: ["Scott Derrickson"], actors: ["Benedict Cumberbatch", "Tilda Swilton", "Chiwetel Ejiofor", "Rachel McAdams", "Mads Mikkelson"],
@@ -36,7 +39,7 @@ var doctor_strange = {
 };
 var war_games = {
     name: "War Games", year: 1983, director: ["John Badham"], actors: ["Mathew Broderick", "Ally Sheedy", "John Wood"],
-    movie_genre: "Science Fiction", length: library.length_setter_movies(1, 54), type: "Movie"
+    movie_genre: "Classic Science Fiction", length: library.length_setter_movies(1, 54), type: "Movie"
 };
 var afghan_girl = { name: "Afghan Girl", year: 1984, photographer: "Steve McCurry", type: "Photograph" };
 var migrant_mother = {
@@ -54,7 +57,7 @@ var lego_batman = {
     movie_genre: "Animation", length: library.length_setter_movies(), type: "Movie"
 };
 var licoln_photo = {
-    name: "Gettysburg Potrait", year: 1863,
+    name: "Lincoln Gettysburg Potrait", year: 1863,
     photographer: "Alexander Gardner", type: "Photo"
 };
 var hail_caesar = {
@@ -80,13 +83,14 @@ var winter_horseman = { name: "Winter Horseman", year: 2016, photographer: "Anth
 var test_name_as_number = { name: "2016", year: 2015, photographer: "test", type: "Photo" };
 var whiskey_tango_foxtrot = { name: "Whiskey Tango Foxtrot", year: 2016, director: ["Glenn Ficarra", "John Requa"], actors: ["Tina Fey", "Margot Robbie", "Martin Freeman", "Alfred Molina", "Christopher Abbot", "Billy Bob Thorton"], movie_genre: "Comedy", length: library.length_setter_movies(1, 52), type: "Movie" };
 var stutterer = { name: "Stutter", year: 2015, director: ["Benjamin Cleary"], actors: ["Matthew Needham", "Eric Richard"], movie_genre: "Short Film", length: library.length_setter_movies(0, 12), type: "Movie" };
+var lincoln = { name: "Lincoln", year: 2012, director: ["Steven Spielberg"], actors: ["Daniel Day Lewis", "Sally Field", "David Strathairn", "Joseph Gordon-Levitt", "James Spader", "Hal Holbrook", "Tommy Lee Jones"], movie_genre: "Epic Historical", length: library.length_setter_movies(2, 30), type: "Movie" };
 //adds test item to library
 library.addSong(moonlight_sonata);
 library.addSong(slay);
 library.addSong(crazy_in_love);
 library.addSong(stayin_alive);
 library.addSong(vivaldi_summer);
-library.addMovie(christmas_party);
+library.addMovie(christmas_party_movie);
 library.addMovie(doctor_strange);
 library.addMovie(war_games);
 library.addMovie(ten_cloverfield);
@@ -94,14 +98,20 @@ library.addMovie(lego_batman);
 library.addMovie(hail_caesar);
 library.addMovie(whiskey_tango_foxtrot);
 library.addMovie(stutterer);
+library.addMovie(lincoln);
 library.addPhoto(myPic);
 library.addPhoto(afghan_girl);
 library.addPhoto(licoln_photo);
 library.addPhoto(migrant_mother);
 library.addPhoto(winter_horseman);
 library.addPhoto(test_name_as_number);
-// console.log(library.filterBy("","2016"));
-// console.log(library.filterBy("", library.length_setter_movies(0,12)));
-console.log(library.filterBy('', "bey", "song"));
-// console.log(library.library_movie); 
+// console.log(library.library_collection);
+// console.log(library.filterBy("year","2016"));
+// console.log(library.filterBy("year","2016","movie"));
+// console.log(library.filterBy("","lincoln",""));
+// console.log(library.filterBy("genre", "classic"))'
+// console.log(library.borrow("name", "war games"));
+// console.log(library.borrow("genre","classic",""));
+// console.log(library.borrow("","","classic"));
+// console.log(library.borrow("","","movie"));
 //# sourceMappingURL=test.js.map

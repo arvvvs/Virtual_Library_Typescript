@@ -78,17 +78,15 @@ var Library = (function () {
                     return_items.splice(i - 1, 0, matched_item);
                     return return_items;
                 }
-                else {
-                    return_items.push(matched_item);
-                    return return_items;
-                }
             }
+            return_items.push(matched_item);
+            return return_items;
         };
     }
     Object.defineProperty(Library.prototype, "library_collection", {
         //returns entire library unsorted
         get: function () {
-            return (this.library);
+            return (JSON.stringify(this.library, undefined, 2));
         },
         enumerable: true,
         configurable: true
@@ -216,6 +214,12 @@ var Library = (function () {
         if (type === "song" && attr === "genre") {
             attr = "song_genre";
         }
+        if (type === "movie" && attr === "") {
+            attr = "type";
+        }
+        if (type === "song" && attr === "") {
+            attr = "type";
+        }
         return { "attribute": attr, "attribute_name": attr_name, "media_type": type };
     };
     /*
@@ -289,11 +293,11 @@ var Library = (function () {
         }
         //Calibrates the grammer/language of return statement
         if (items_borrowed.length > 0) {
-            return_string += "You borrowed " + items_borrowed.join(" , ");
+            return_string += "You borrowed " + items_borrowed.join(", ");
             return_string += "\n";
         }
         if (items_already_borrowed.length > 0) {
-            return_string += "You have already borrowed " + items_already_borrowed.join(" , ");
+            return_string += "You have already borrowed " + items_already_borrowed.join(", ");
             return_string += "\n";
         }
         if (items_not_borrowed.length > 0) {
@@ -304,7 +308,10 @@ var Library = (function () {
             else {
                 these_this = "this item is";
             }
-            return_string += "You were unable to borrow " + items_not_borrowed.join(" , ") + " because " + these_this + " too new.";
+            return_string += "You were unable to borrow " + items_not_borrowed.join(", ") + " because " + these_this + " too new.";
+        }
+        if (items_borrowed.length === 0 && items_already_borrowed.length === 0 && items_not_borrowed.length === 0) {
+            return_string += "No items of attribute \'" + attr_case + "\' and attribute value \'" + attr_name_case + "\' not found.  Please try a different query";
         }
         //returns a string telling user of items they borrowed,
         //and they were unable to borrow

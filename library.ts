@@ -44,7 +44,7 @@ export class Library {
     private borrowed = [];
     //returns entire library unsorted
     get library_collection() {
-        return (this.library);
+        return (JSON.stringify(this.library, undefined, 2));
     }
     //returns all movies in library sorted
     get library_movie() {
@@ -118,7 +118,7 @@ export class Library {
         attr = optimized["attribute"];
         attr_name = optimized["attribute_name"];
         type = optimized["media_type"];
-       
+
         //if a type parameter is provided   
         if (type === "song" || type === "movie" || type === "photo") {
             for (let library_item of this.library[type]) {
@@ -183,9 +183,15 @@ export class Library {
         if (type === "song" && attr === "genre") {
             attr = "song_genre";
         }
-        
+        if (type === "movie" && attr === "") {
+            attr = "type";
+        }
+        if (type === "song" && attr === "") {
+            attr = "type";
+        }
 
-        return {"attribute":attr, "attribute_name":attr_name, "media_type":type}
+
+        return { "attribute": attr, "attribute_name": attr_name, "media_type": type }
     }
     /*
     * Checks to see if attribute matches the search query and adds it to return items if it does
@@ -197,12 +203,15 @@ export class Library {
     */
     addItem = (library_item, attr, attr_name, return_items) => {
         //if user provided an attribute
+
         if (attr !== "") {
             this.queryMatch(attr, attr_name, library_item, return_items);
+
         }
 
         else {
-            for (let attribute in library_item) {
+            for (let attribute in library_item) {  
+             
                 this.queryMatch(attribute, attr_name, library_item, return_items);
             }
         }
@@ -221,6 +230,7 @@ export class Library {
                     return_items.push(library_item);
                 }
                 else {
+
                     if (String(library_item[attr]) === String(attr_name)) {
                         return_items.push(library_item);
 
@@ -231,13 +241,16 @@ export class Library {
             //inserts element in sorted order
             //so worst case for operation is O(N) instead of O(log N)
             else {
+
                 //makes sure the years are exact 
                 if (attr !== "year") {
                     this.return_sorted_items(return_items, library_item);
+
                 }
                 else {
                     if (String(library_item[attr]) === String(attr_name)) {
                         this.return_sorted_items(return_items, library_item);
+
 
                     }
                 }
@@ -248,10 +261,10 @@ export class Library {
     // based on the item's name or year released
     return_sorted_items = (return_items, matched_item) => {
         for (let i = 0; i < return_items.length; i++) {
-
             if (return_items[i]["name"] > matched_item["name"]) {
                 //if the first element is larger than the element
                 //we're seeking to insert
+
                 if (i === 0) {
                     return_items.splice(i, 0, matched_item);
                     return return_items;
@@ -259,12 +272,14 @@ export class Library {
                 return_items.splice(i - 1, 0, matched_item);
                 return return_items;
             }
-            else {
-                return_items.push(matched_item);
-                return return_items;
-            }
         }
+
+
+        return_items.push(matched_item);
+        return return_items;
     }
+
+
 
 
     /*
@@ -289,8 +304,8 @@ export class Library {
         let items_already_borrowed = [];
         //contains the information to be returned in a user readable way
         let return_string = "";
-
         for (let items of search) {
+
             //checks to see if it's old enough to be borrowed
             //and if it's already been borrowed
             if (items["year"] < (current_year - 1) && (this.borrowed.indexOf(items) === -1)) {
@@ -308,11 +323,11 @@ export class Library {
         }
         //Calibrates the grammer/language of return statement
         if (items_borrowed.length > 0) {
-            return_string += "You borrowed " + items_borrowed.join(" , ");
+            return_string += "You borrowed " + items_borrowed.join(", ");
             return_string += "\n"
         }
         if (items_already_borrowed.length > 0) {
-            return_string += "You have already borrowed " + items_already_borrowed.join(" , ");
+            return_string += "You have already borrowed " + items_already_borrowed.join(", ");
             return_string += "\n"
         }
         if (items_not_borrowed.length > 0) {
@@ -322,8 +337,13 @@ export class Library {
             }
             else {
                 these_this = "this item is";
+
             }
-            return_string += "You were unable to borrow " + items_not_borrowed.join(" , ") + " because " + these_this + " too new.";
+            return_string += "You were unable to borrow " + items_not_borrowed.join(", ") + " because " + these_this + " too new.";
+
+        }
+        if (items_borrowed.length === 0 && items_already_borrowed.length === 0 && items_not_borrowed.length === 0) {
+            return_string += "No items of attribute \'" + attr_case + "\' and attribute value \'" + attr_name_case + "\' not found.  Please try a different query";
         }
         //returns a string telling user of items they borrowed,
         //and they were unable to borrow
